@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 // AppConfig holds all configurable parameters of the application. It is loaded
@@ -20,10 +22,27 @@ type AppConfig struct {
 	SMTPPassword string
 }
 
+// loadEnvFile loads environment variables from a file when it exists.
+// It ignores missing files but returns any other error encountered.
+func loadEnvFile(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("stat %s: %w", path, err)
+	}
+	if err := godotenv.Overload(path); err != nil {
+		return fmt.Errorf("load %s: %w", path, err)
+	}
+	return nil
+}
+
 // LoadConfig reads the required environment variables, sets default values for
 // optional ones and validates mandatory fields. It returns an AppConfig instance
 // ready to be consumed by the application.
 func LoadConfig() (*AppConfig, error) {
+	_ = loadEnvFile(".env")
+
 	cfg := &AppConfig{}
 
 	// Environment the application is running in. Defaults to "dev" when not
