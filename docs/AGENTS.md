@@ -1,17 +1,34 @@
 # AGENTS
 
-Este arquivo orienta o uso de IA na expansão do projeto.
+Este documento padroniza a forma de usar agentes de IA na evolução do projeto. Seu propósito é garantir que toda automação siga a arquitetura e os princípios definidos.
 
-## Exemplo de prompt para criação de novos módulos
-
+## Exemplo de Prompt
 ```
-Crie um novo módulo de domínio seguindo a estrutura do projeto. Gere entidade, repositório, serviço, usecase e handler correspondentes, aplicando princípios SOLID e mantendo a independência de infraestrutura.
+Crie um novo módulo chamado `Invoice` seguindo os mesmos padrões do módulo `User`:
+- `entity`
+- `repository` (interface)
+- `service` (interface)
+- `usecase` (implementação)
+- `handler` com endpoints REST
+- Registro de rotas e injeção no container
 ```
 
-## Checklist de validação SOLID
+## Checklist de Validação SOLID
+- A responsabilidade de cada struct está clara e única?
+- Alguma interface está sendo implementada forçadamente?
+- A lógica de domínio conhece detalhes técnicos da infraestrutura?
+- Algum handler ou usecase realiza mais de uma função?
+- As dependências são injetadas por abstrações?
 
-- [ ] **Single Responsibility**: cada módulo possui apenas uma responsabilidade?
-- [ ] **Open/Closed**: novas funcionalidades exigem modificação mínima em código existente?
-- [ ] **Liskov Substitution**: interfaces são respeitadas por implementações?
-- [ ] **Interface Segregation**: dependências expõem apenas o necessário?
-- [ ] **Dependency Inversion**: detalhes dependem de abstrações e não o contrário?
+Regras
+- O tom deve ser direto e técnico
+- Não incluir código, apenas estrutura, instruções e convenções
+
+⸻
+
+Padrões aplicados
+- SRP: cada documento tem uma função clara
+- Transparência e padronização para evoluções futuras
+
+Finalidade
+Documentar com clareza a estrutura, funcionamento e diretrizes do projeto, tornando possível sua adoção por múltiplos desenvolvedores e agentes de automação com mínima curva de aprendizado.
