@@ -37,5 +37,5 @@ func main() {
 
 // registerRoutes attaches handlers to the router using the container handlers.
 func registerRoutes(r *chi.Mux, c *app.AppContainer) {
-	httproutes.RegisterRoutes(r, c.UserHandler)
+	httproutes.RegisterRoutes(r, c.UserHandler, c.HealthHandler)
 }

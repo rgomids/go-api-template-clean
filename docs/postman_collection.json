@@ -1,0 +1,46 @@
+{
+  "info": {
+    "name": "Go API Template",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": {
+          "raw": "{{base_url}}/users/",
+          "host": ["{{base_url}}"],
+          "path": ["users", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jon\",\n  \"email\": \"jon@example.com\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/users/:id",
+          "host": ["{{base_url}}"],
+          "path": ["users", ":id"]
+        }
+      }
+    }
+  ]
+}

@@ -6,9 +6,11 @@ import (
 )
 
 // RegisterRoutes maps API endpoints to handlers.
-func RegisterRoutes(router *chi.Mux, handler *httphandler.UserHandler) {
+func RegisterRoutes(router *chi.Mux, userHandler *httphandler.UserHandler, healthHandler *httphandler.HealthHandler) {
+	router.Get("/health", healthHandler.Check)
+
 	router.Route("/users", func(r chi.Router) {
-		r.Post("/", handler.Register)
-		r.Delete("/{id}", handler.Delete)
+		r.Post("/", userHandler.Register)
+		r.Delete("/{id}", userHandler.Delete)
 	})
 }

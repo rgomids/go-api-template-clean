@@ -37,3 +37,11 @@ O projeto já inclui integrações para:
    ```bash
    make run
    ```
+
+## Endpoints básicos
+
+- `GET /health` retorna o status da API e a versão lida do arquivo `VERSION`.
+- `POST /users` cria um usuário.
+- `DELETE /users/{id}` remove um usuário.
+
+Um arquivo de coleção do Postman está disponível em `docs/postman_collection.json`.

@@ -10,8 +10,9 @@ import (
 
 // AppContainer groups dependencies for injection across the application.
 type AppContainer struct {
-	UserService service.UserService
-	UserHandler *httphandler.UserHandler
+	UserService   service.UserService
+	UserHandler   *httphandler.UserHandler
+	HealthHandler *httphandler.HealthHandler
 }
 
 // dummyUserRepository is a minimal in-memory implementation of UserRepository.
@@ -36,14 +37,21 @@ func NewUserHandler(svc service.UserService) *httphandler.UserHandler {
 	return httphandler.NewUserHandler(svc)
 }
 
+// NewHealthHandler builds an HTTP handler for health checks.
+func NewHealthHandler() *httphandler.HealthHandler {
+	return httphandler.NewHealthHandler()
+}
+
 // BuildContainer assembles all dependencies of the application.
 func BuildContainer() *AppContainer {
 	repo := NewUserRepository()
 	svc := NewUserService(repo)
-	handler := NewUserHandler(svc)
+	userHandler := NewUserHandler(svc)
+	healthHandler := NewHealthHandler()
 
 	return &AppContainer{
-		UserService: svc,
-		UserHandler: handler,
+		UserService:   svc,
+		UserHandler:   userHandler,
+		HealthHandler: healthHandler,
 	}
 }
