@@ -60,6 +60,7 @@ make setup
 go run ./cmd
    ```
    Quando um `Makefile` estiver disponível utilize `make build`, `make test` e `make run` para padronizar as etapas.
+4. Para testar a API via Postman, importe os arquivos `docs/postman_collection.json` e `docs/postman_environment.json`.
 
 ## Como Estender
 - Crie novas entidades em `internal/domain/entity` e suas interfaces em `repository` ou `service`.

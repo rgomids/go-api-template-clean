@@ -44,7 +44,7 @@ O projeto já inclui integrações para:
 - `POST /users` cria um usuário.
 - `DELETE /users/{id}` remove um usuário.
 
-Importe a coleção `docs/postman_collection.json` no Postman para testar todos os endpoints rapidamente.
+Importe a coleção `docs/postman_collection.json` e o ambiente `docs/postman_environment.json` no Postman para testar os endpoints rapidamente.
 
 ## Evoluindo a API
 
