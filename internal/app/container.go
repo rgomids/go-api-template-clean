@@ -1,64 +1,49 @@
 package app
 
-// container.go centralizes dependency injection for the application. The
-// concrete implementations are intentionally simple and work only as
-// placeholders so the dependency graph can be composed without coupling the
-// rest of the code to specific technologies.
+import (
+	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
+	domainrepo "github.com/rgomids/go-api-template-clean/internal/domain/repository"
+	"github.com/rgomids/go-api-template-clean/internal/domain/service"
+	"github.com/rgomids/go-api-template-clean/internal/domain/usecase"
+	httphandler "github.com/rgomids/go-api-template-clean/internal/handler/http"
+)
 
-// UserRepository defines the required persistence methods for users. The
-// interface is intentionally empty for this template.
-type UserRepository interface{}
-
-// UserService exposes user related business operations. It is represented as an
-// interface to allow multiple implementations.
-type UserService interface{}
-
-// userService is a minimal implementation of UserService used only for
-// injection demonstration.
-type userService struct {
-	repo UserRepository
-}
-
-// UserHandler deals with HTTP requests related to users. Real handler logic is
-// omitted in this template.
-type UserHandler struct {
-	service UserService
-}
-
-// AppContainer groups all dependencies that can be injected throughout the
-// application.
+// AppContainer groups dependencies for injection across the application.
 type AppContainer struct {
-	UserService UserService
-	UserHandler *UserHandler
+	UserService service.UserService
+	UserHandler *httphandler.UserHandler
 }
 
-// NewUserRepository constructs a new UserRepository. At this stage it returns a
-// nil implementation, serving only to demonstrate the dependency chain.
-func NewUserRepository() UserRepository {
-	return nil
+// dummyUserRepository is a minimal in-memory implementation of UserRepository.
+type dummyUserRepository struct{}
+
+func (d *dummyUserRepository) FindByID(id string) (*entity.User, error) { return nil, nil }
+func (d *dummyUserRepository) Save(u *entity.User) error                { return nil }
+func (d *dummyUserRepository) Delete(id string) error                   { return nil }
+
+// NewUserRepository constructs a repository instance.
+func NewUserRepository() domainrepo.UserRepository {
+	return &dummyUserRepository{}
 }
 
-// NewUserService receives a UserRepository and returns an instance of
-// UserService. The concrete implementation is minimal, focusing on explicit
-// injection of dependencies.
-func NewUserService(repo UserRepository) UserService {
-	return &userService{repo: repo}
+// NewUserService builds the user service using the provided repository.
+func NewUserService(repo domainrepo.UserRepository) service.UserService {
+	return usecase.NewUserUseCase(repo)
 }
 
-// NewUserHandler builds a UserHandler using the provided UserService.
-func NewUserHandler(service UserService) *UserHandler {
-	return &UserHandler{service: service}
+// NewUserHandler builds an HTTP handler for users.
+func NewUserHandler(svc service.UserService) *httphandler.UserHandler {
+	return httphandler.NewUserHandler(svc)
 }
 
-// BuildContainer assembles all application dependencies and returns a fully
-// populated AppContainer.
+// BuildContainer assembles all dependencies of the application.
 func BuildContainer() *AppContainer {
 	repo := NewUserRepository()
-	service := NewUserService(repo)
-	handler := NewUserHandler(service)
+	svc := NewUserService(repo)
+	handler := NewUserHandler(svc)
 
 	return &AppContainer{
-		UserService: service,
+		UserService: svc,
 		UserHandler: handler,
 	}
 }
