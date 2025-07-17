@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/seuusuario/go-api-template-clean/internal/app"
-	"github.com/seuusuario/go-api-template-clean/internal/config"
+	"github.com/rgomids/go-api-template-clean/internal/app"
+	"github.com/rgomids/go-api-template-clean/internal/config"
 )
 
 // Entry point of the application.

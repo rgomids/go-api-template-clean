@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/seuusuario/go-api-template-clean/internal/domain/entity"
+import "github.com/rgomids/go-api-template-clean/internal/domain/entity"
 
 // UserRepository defines persistence operations for User entities.
 type UserRepository interface {

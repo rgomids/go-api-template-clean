@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/seuusuario/go-api-template-clean/internal/domain/entity"
-	"github.com/seuusuario/go-api-template-clean/internal/domain/repository"
-	"github.com/seuusuario/go-api-template-clean/internal/domain/service"
+	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
+	"github.com/rgomids/go-api-template-clean/internal/domain/repository"
+	"github.com/rgomids/go-api-template-clean/internal/domain/service"
 )
 
 // UserUseCase implements UserService, orchestrating business logic.

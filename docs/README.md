@@ -37,7 +37,7 @@ pkg/            # utilidades e contratos externos
 1. Crie um módulo Go:
 
 ```bash
-go mod init github.com/seuusuario/go-api-template-clean
+go mod init github.com/rgomids/go-api-template-clean
 ```
 
 2. Construa o container de dependências e inicialize o servidor:
