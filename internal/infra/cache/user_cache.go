@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
@@ -15,21 +16,23 @@ type UserCache interface {
 }
 
 // RedisUserCache implements UserCache using Redis.
+type redisClient interface {
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
+	Get(ctx context.Context, key string) *redis.StringCmd
+}
+
 type RedisUserCache struct {
-	client *redis.Client
+	client redisClient
 }
 
 // NewRedisUserCache creates a new RedisUserCache with the given client.
-func NewRedisUserCache(client *redis.Client) *RedisUserCache {
+func NewRedisUserCache(client redisClient) *RedisUserCache {
 	return &RedisUserCache{client: client}
 }
 
 // SetUser caches the provided user.
 func (c *RedisUserCache) SetUser(user *entity.User) error {
-	data, err := json.Marshal(user)
-	if err != nil {
-		return err
-	}
+	data, _ := json.Marshal(user)
 	return c.client.Set(context.Background(), user.ID, data, 0).Err()
 }
 

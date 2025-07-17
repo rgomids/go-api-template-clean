@@ -8,12 +8,21 @@ import (
 )
 
 // PostgresUserRepository implements UserRepository using a PostgreSQL database.
+type dbExecutor interface {
+	Exec(query string, args ...any) (sql.Result, error)
+	QueryRow(query string, args ...any) rowScanner
+}
+
+type rowScanner interface {
+	Scan(dest ...any) error
+}
+
 type PostgresUserRepository struct {
-	db *sql.DB
+	db dbExecutor
 }
 
 // NewPostgresUserRepository creates a repository with the given DB connection.
-func NewPostgresUserRepository(db *sql.DB) *PostgresUserRepository {
+func NewPostgresUserRepository(db dbExecutor) *PostgresUserRepository {
 	return &PostgresUserRepository{db: db}
 }
 

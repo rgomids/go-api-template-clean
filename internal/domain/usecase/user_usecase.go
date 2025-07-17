@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
@@ -50,7 +51,7 @@ var _ service.UserService = (*UserUseCase)(nil)
 
 func generateID() string {
 	b := make([]byte, 16)
-	if _, err := rand.Read(b); err != nil {
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		return fmt.Sprintf("%d", time.Now().UnixNano())
 	}
 	return hex.EncodeToString(b)

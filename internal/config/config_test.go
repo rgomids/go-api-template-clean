@@ -32,3 +32,17 @@ func TestLoadConfigInvalidSMTPPort(t *testing.T) {
 		t.Fatal("expected error for invalid SMTP_PORT")
 	}
 }
+
+func TestLoadConfigFull(t *testing.T) {
+	t.Setenv("APP_ENV", "prod")
+	t.Setenv("PORT", "9090")
+	t.Setenv("DATABASE_URL", "db")
+	t.Setenv("SMTP_PORT", "2525")
+	cfg, err := LoadConfig()
+	if err != nil {
+		t.Fatalf("load error: %v", err)
+	}
+	if !cfg.IsProd() || cfg.Port != "9090" || cfg.SMTPPort != 2525 {
+		t.Fatal("values not loaded correctly")
+	}
+}
