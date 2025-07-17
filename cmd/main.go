@@ -11,13 +11,16 @@ import (
 	httproutes "github.com/rgomids/go-api-template-clean/internal/handler/http/routes"
 )
 
+var listenAndServe = http.ListenAndServe
+
 // Entry point of the application.
 // It loads the configuration, builds the dependency container, registers the
 // routes and finally starts the HTTP server.
 func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("failed to load configuration: %v", err)
+		log.Printf("failed to load configuration: %v", err)
+		return
 	}
 
 	container := app.BuildContainer()
@@ -30,8 +33,8 @@ func main() {
 	addr := ":" + cfg.Port
 
 	log.Printf("starting HTTP server on %s", addr)
-	if err := http.ListenAndServe(addr, router); err != nil {
-		log.Fatalf("server error: %v", err)
+	if err := listenAndServe(addr, router); err != nil {
+		log.Printf("server error: %v", err)
 	}
 }
 
