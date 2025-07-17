@@ -24,5 +24,11 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
+    - name: Test with coverage
+      run: |
+        go test ./... -coverprofile=coverage.out -covermode=atomic
+        total=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}')
+        if [ "$total" != "100.0%" ] && [ "$total" != "100.00%" ]; then
+          echo "Coverage is $total, expected 100%"
+          exit 1
+        fi
