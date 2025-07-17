@@ -79,6 +79,6 @@ Siga os passos abaixo para adicionar novas funcionalidades. O exemplo a seguir m
 6. Atualize `BuildContainer` em `internal/app/container.go` para injetar o novo handler.
 7. Execute `go test ./...` para garantir que tudo continua funcionando.
 
-### Referências sobre o Pateta
-- [Wikipedia - Pateta](https://pt.wikipedia.org/wiki/Pateta)
-- [Disney Fandom - Goofy](https://disney.fandom.com/wiki/Goofy)
+### Referências sobre Patterns
+- [Wikipedia - Software design pattern](https://en.wikipedia.org/wiki/Software_design_pattern)
+- [Refactoring Guru - Design Patterns in Go](https://refactoring.guru/design-patterns/go)
