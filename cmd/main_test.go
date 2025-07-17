@@ -13,7 +13,7 @@ import (
 
 func TestRegisterRoutes(t *testing.T) {
 	r := chi.NewRouter()
-	c := app.BuildContainer()
+	c := app.BuildContainer("test")
 	registerRoutes(r, c)
 	ts := httptest.NewServer(r)
 	defer ts.Close()

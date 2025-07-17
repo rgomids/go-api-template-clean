@@ -3,8 +3,8 @@ package app
 import "testing"
 
 func TestBuildContainer(t *testing.T) {
-	c := BuildContainer()
-	if c == nil || c.UserService == nil || c.UserHandler == nil {
+	c := BuildContainer("1.0.0")
+	if c == nil || c.UserService == nil || c.UserHandler == nil || c.HealthHandler == nil {
 		t.Fatal("container not built correctly")
 	}
 }
