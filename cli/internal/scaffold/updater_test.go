@@ -9,7 +9,7 @@ func TestUpdateNilSpec(t *testing.T) {
 }
 
 func TestUpdateOK(t *testing.T) {
-	spec := &ScaffoldSpec{Entity: "Test"}
+	spec := &ScaffoldSpec{EntityName: "Test"}
 	if err := Update(spec); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
