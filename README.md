@@ -45,3 +45,40 @@ O projeto já inclui integrações para:
 - `DELETE /users/{id}` remove um usuário.
 
 Importe a coleção `docs/postman_collection.json` no Postman para testar todos os endpoints rapidamente.
+
+## Evoluindo a API
+
+Siga os passos abaixo para adicionar novas funcionalidades. O exemplo a seguir mostra como criar uma rota para cadastro de produtos.
+
+1. Crie a estrutura do produto em `internal/domain/entity/product.go`:
+   ```go
+   package entity
+
+   type Product struct {
+       ID   string
+       Name string
+   }
+   ```
+2. Defina `ProductRepository` em `internal/domain/repository` e a interface `ProductService` em `internal/domain/service`.
+3. Implemente `ProductUseCase` em `internal/domain/usecase` seguindo as interfaces criadas.
+4. Crie `ProductHandler` em `internal/handler/http` para expor os métodos via HTTP.
+5. Registre as rotas em `internal/handler/http/routes/routes.go`:
+   ```go
+   func RegisterRoutes(router *chi.Mux, userHandler *http.UserHandler, productHandler *http.ProductHandler) {
+       router.Route("/users", func(r chi.Router) {
+           r.Post("/", userHandler.Register)
+           r.Delete("/{id}", userHandler.Delete)
+       })
+
+       router.Route("/products", func(r chi.Router) {
+           r.Post("/", productHandler.Create)
+           r.Get("/{id}", productHandler.FindByID)
+       })
+   }
+   ```
+6. Atualize `BuildContainer` em `internal/app/container.go` para injetar o novo handler.
+7. Execute `go test ./...` para garantir que tudo continua funcionando.
+
+### Referências sobre o Pateta
+- [Wikipedia - Pateta](https://pt.wikipedia.org/wiki/Pateta)
+- [Disney Fandom - Goofy](https://disney.fandom.com/wiki/Goofy)
