@@ -43,11 +43,11 @@ Essas separações reforçam os princípios SOLID, mantendo baixo acoplamento e 
 Cada pasta possui responsabilidade única, facilitando testes unitários e extensões controladas.
 
 ## Como Usar
-1. Clone o projeto e instale as dependências:
+1. Clone o projeto e prepare o ambiente:
    ```bash
 git clone <repo-url>
 cd go-api-template-clean
-go mod download
+make setup
    ```
 2. Configure as variáveis de ambiente conforme `internal/config`:
    - `APP_ENV` (dev|prod)

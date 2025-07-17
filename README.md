@@ -3,13 +3,28 @@
 Este repositório apresenta uma estrutura base para APIs em Go.
 Consulte o diretório [`docs`](docs/README.md) para detalhes de arquitetura e instruções de uso.
 
+## Requisitos
+
+- Go 1.20 ou superior
+- Make
+- Ferramentas de lint como [staticcheck](https://staticcheck.io) (instalado via `make setup`)
+
+## Conexões externas
+
+O projeto já inclui integrações para:
+
+- Banco de dados PostgreSQL
+- Cache Redis
+- Envio de emails via SMTP
+
 ## Configuração rápida
 
-1. Copie o arquivo `.env.example` para `.env` e ajuste os valores conforme o ambiente:
+1. Execute o comando abaixo para preparar o ambiente de desenvolvimento:
    ```bash
-   cp .env.example .env
+   make setup
    ```
-   Variáveis disponíveis:
+   Esse passo copia o `.env.example` para `.env` (caso ainda não exista), instala as dependências Go e a ferramenta `staticcheck`.
+2. Ajuste as variáveis no arquivo `.env`:
    - `APP_ENV` (dev|prod)
    - `PORT` (padrão 8080)
    - `DATABASE_URL` (obrigatória)
@@ -18,8 +33,7 @@ Consulte o diretório [`docs`](docs/README.md) para detalhes de arquitetura e in
    - `SMTP_PORT` (padrão 587)
    - `SMTP_USER`
    - `SMTP_PASSWORD`
-2. Instale as dependências e execute a aplicação:
+3. Execute a aplicação:
    ```bash
-   go mod download
-   go run ./cmd
+   make run
    ```
