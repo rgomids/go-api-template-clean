@@ -9,7 +9,7 @@ func TestGenerateNilSpec(t *testing.T) {
 }
 
 func TestGenerateOK(t *testing.T) {
-	spec := &ScaffoldSpec{Entity: "Test"}
+	spec := &ScaffoldSpec{EntityName: "Test"}
 	if err := Generate(spec); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
