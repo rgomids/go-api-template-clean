@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -86,5 +87,32 @@ func TestLoadConfigLoadsDotEnv(t *testing.T) {
 	}
 	if cfg.SMTPPort != 2525 {
 		t.Errorf("expected smtp port 2525, got %d", cfg.SMTPPort)
+	}
+}
+
+func TestIsProd(t *testing.T) {
+	cfg := &AppConfig{Env: "prod"}
+	if !cfg.IsProd() {
+		t.Errorf("expected IsProd to return true")
+	}
+	cfg.Env = "dev"
+	if cfg.IsProd() {
+		t.Errorf("expected IsProd to return false")
+	}
+}
+
+func TestLoadEnvFileStatError(t *testing.T) {
+	path := strings.Repeat("a", 5000)
+	if err := loadEnvFile(path); err == nil {
+		t.Fatal("expected error for stat failure")
+	}
+}
+
+func TestLoadEnvFileParseError(t *testing.T) {
+	dir := t.TempDir()
+	envPath := filepath.Join(dir, "bad.env")
+	os.WriteFile(envPath, []byte("INVALID LINE\nfoo=bar"), 0o600)
+	if err := loadEnvFile(envPath); err == nil {
+		t.Fatal("expected error for invalid env file")
 	}
 }
