@@ -11,4 +11,6 @@ func RegisterRoutes(router *chi.Mux, handler *httphandler.UserHandler) {
 		r.Post("/", handler.Register)
 		r.Delete("/{id}", handler.Delete)
 	})
+
+	// [AUTO-GENERATED-ROUTES]
 }

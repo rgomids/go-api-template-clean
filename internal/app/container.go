@@ -13,6 +13,8 @@ type AppContainer struct {
 	UserService   service.UserService
 	UserHandler   *httphandler.UserHandler
 	HealthHandler *httphandler.HealthHandler
+
+	// [AUTO-GENERATED-CONTAINER]
 }
 
 // dummyUserRepository is a minimal in-memory implementation of UserRepository.
@@ -44,9 +46,12 @@ func BuildContainer(version string) *AppContainer {
 	handler := NewUserHandler(svc)
 	health := httphandler.NewHealthHandler(version)
 
+	// [AUTO-GENERATED-CONTAINER]
+
 	return &AppContainer{
 		UserService:   svc,
 		UserHandler:   handler,
 		HealthHandler: health,
+		// [AUTO-GENERATED-CONTAINER]
 	}
 }
