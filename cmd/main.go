@@ -22,9 +22,8 @@ func main() {
 	mux := http.NewServeMux()
 	registerRoutes(mux, container)
 
-	// Default address if configuration does not specify one.
-	addr := ":8080"
-	_ = cfg // cfg can later provide the server port or other settings.
+	// Use configured address for the HTTP server.
+	addr := cfg.ServerAddr
 
 	log.Printf("starting HTTP server on %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
