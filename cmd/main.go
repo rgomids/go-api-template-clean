@@ -9,6 +9,7 @@ import (
 	"github.com/rgomids/go-api-template-clean/internal/config"
 	httpmiddleware "github.com/rgomids/go-api-template-clean/internal/handler/http/middleware"
 	httproutes "github.com/rgomids/go-api-template-clean/internal/handler/http/routes"
+	"github.com/rgomids/go-api-template-clean/pkg/version"
 )
 
 var listenAndServe = http.ListenAndServe
@@ -23,7 +24,12 @@ func main() {
 		return
 	}
 
-	container := app.BuildContainer()
+	v, err := version.Load("VERSION")
+	if err != nil {
+		log.Printf("failed to load version: %v", err)
+	}
+
+	container := app.BuildContainer(v)
 
 	router := chi.NewRouter()
 	router.Use(httpmiddleware.LoggerMiddleware)
@@ -41,4 +47,5 @@ func main() {
 // registerRoutes attaches handlers to the router using the container handlers.
 func registerRoutes(r *chi.Mux, c *app.AppContainer) {
 	httproutes.RegisterRoutes(r, c.UserHandler)
+	r.Get("/health", c.HealthHandler.Status)
 }
