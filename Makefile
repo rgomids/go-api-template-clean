@@ -1,9 +1,10 @@
-.PHONY: help run dev lint fmt test build docker-dev docker-prod
+.PHONY: help run dev lint fmt test build docker-dev docker-prod setup
 
 help:
 	@echo "Comandos disponíveis:"
 	@echo "  make run          - Executa a API localmente (modo padrão)"
 	@echo "  make dev          - Executa a API com variável ENV=dev"
+	@echo "  make setup        - Prepara o ambiente de desenvolvimento"
 	@echo "  make test         - Executa os testes unitários"
 	@echo "  make lint         - Roda o linter (go vet + staticcheck)"
 	@echo "  make fmt          - Formata o código com go fmt"
@@ -17,12 +18,17 @@ run:
 dev:
 	ENV=dev go run ./cmd/main.go
 
+setup:
+	@cp -n .env.example .env 2>/dev/null || true
+	go mod download
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+
 test:
 	go test ./... -v -cover
 
 lint:
 	go vet ./...
-	staticcheck ./...
+	staticcheck -go 1.24 ./...
 
 fmt:
 	go fmt ./...
