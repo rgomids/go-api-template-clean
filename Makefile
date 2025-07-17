@@ -1,4 +1,4 @@
-.PHONY: help run dev lint fmt test build docker-dev docker-prod setup
+.PHONY: help run dev lint fmt test coverage build docker-dev docker-prod setup
 
 help:
 	@echo "Comandos disponíveis:"
@@ -6,6 +6,7 @@ help:
 	@echo "  make dev          - Executa a API com variável ENV=dev"
 	@echo "  make setup        - Prepara o ambiente de desenvolvimento"
 	@echo "  make test         - Executa os testes unitários"
+	@echo "  make coverage     - Executa testes com relatório de cobertura"
 	@echo "  make lint         - Roda o linter (go vet + staticcheck)"
 	@echo "  make fmt          - Formata o código com go fmt"
 	@echo "  make build        - Compila o binário para o host local"
@@ -25,6 +26,11 @@ setup:
 
 test:
 	go test ./... -v -cover
+
+coverage:
+	mkdir -p coverage
+	go test ./... -coverprofile=coverage/coverage.out
+	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 
 lint:
 	go vet ./...

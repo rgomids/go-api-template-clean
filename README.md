@@ -38,6 +38,15 @@ O projeto já inclui integrações para:
    make run
    ```
 
+## Testes e cobertura
+
+Para executar os testes com relatório de cobertura, utilize:
+
+```bash
+make coverage
+```
+O comando gera os arquivos `coverage/coverage.out` e `coverage/coverage.html`.
+
 ## Rotas disponíveis
 
 - `GET /health` retorna o status e a versão da API.
