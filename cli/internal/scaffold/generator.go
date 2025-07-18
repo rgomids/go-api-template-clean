@@ -12,6 +12,8 @@ import (
 
 	"github.com/rgomids/go-api-template-clean/cli/pkg/file"
 	"github.com/rgomids/go-api-template-clean/cli/pkg/formatter"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var templateDir string
@@ -58,6 +60,7 @@ func Generate(spec *ScaffoldSpec) error {
 		"handler_test.tmpl":    filepath.Join("internal/handler/http", formatter.ToSnake(spec.EntityName)+"_handler_test.go"),
 		"usecase_test.tmpl":    filepath.Join("internal/domain/usecase", formatter.ToSnake(spec.EntityName)+"_usecase_test.go"),
 		"mock_repository.tmpl": filepath.Join("mocks", formatter.ToSnake(spec.EntityName)+"_repository_mock.go"),
+		"factory.tmpl":         filepath.Join("internal/app", formatter.ToSnake(spec.EntityName)+"_factory.go"),
 	}
 
 	for tmpl, dest := range files {
@@ -132,8 +135,9 @@ func toPascal(s string) string {
 		return ""
 	}
 	parts := strings.FieldsFunc(s, func(r rune) bool { return r == '_' || r == '-' || r == ' ' })
+	c := cases.Title(language.Und)
 	for i, p := range parts {
-		parts[i] = strings.Title(p)
+		parts[i] = c.String(p)
 	}
 	return strings.Join(parts, "")
 }

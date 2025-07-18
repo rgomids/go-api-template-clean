@@ -1,0 +1,27 @@
+package app
+
+import (
+    "{{ .ImportPath }}/internal/domain/entity"
+    domainrepo "{{ .ImportPath }}/internal/domain/repository"
+    "{{ .ImportPath }}/internal/domain/service"
+    "{{ .ImportPath }}/internal/domain/usecase"
+    httphandler "{{ .ImportPath }}/internal/handler/http"
+)
+
+type dummy{{ .EntityName }}Repository struct{}
+
+func (d *dummy{{ .EntityName }}Repository) FindByID(id string) (*entity.{{ .EntityName }}, error) { return nil, nil }
+func (d *dummy{{ .EntityName }}Repository) Save(e *entity.{{ .EntityName }}) error { return nil }
+func (d *dummy{{ .EntityName }}Repository) Delete(id string) error { return nil }
+
+func New{{ .EntityName }}Repository() domainrepo.{{ .EntityName }}Repository {
+    return &dummy{{ .EntityName }}Repository{}
+}
+
+func New{{ .EntityName }}Service(repo domainrepo.{{ .EntityName }}Repository) service.{{ .EntityName }}Service {
+    return usecase.New{{ .EntityName }}UseCase(repo)
+}
+
+func New{{ .EntityName }}Handler(svc service.{{ .EntityName }}Service) *httphandler.{{ .EntityName }}Handler {
+    return httphandler.New{{ .EntityName }}Handler(svc)
+}

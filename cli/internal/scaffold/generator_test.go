@@ -28,6 +28,7 @@ func TestGenerateOK(t *testing.T) {
 		filepath.Join("internal/domain/usecase", "test_usecase_test.go"),
 		filepath.Join("internal/handler/http", "test_handler_test.go"),
 		filepath.Join("mocks", "test_repository_mock.go"),
+		filepath.Join("internal/app", "test_factory.go"),
 	}
 
 	for _, p := range paths {

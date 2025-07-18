@@ -21,6 +21,7 @@ func TestUpdateOK(t *testing.T) {
 
 	os.MkdirAll(filepath.Join("internal/handler/http/routes"), 0o755)
 	os.MkdirAll(filepath.Join("internal/app"), 0o755)
+	os.MkdirAll(filepath.Join("cmd"), 0o755)
 
 	routes := `package routes
 
@@ -35,6 +36,7 @@ func RegisterRoutes(router *chi.Mux, handler *httphandler.UserHandler) {
 }
 `
 	os.WriteFile(filepath.Join("internal/handler/http/routes", "routes.go"), []byte(routes), 0o600)
+	os.WriteFile(filepath.Join("internal/handler/http/routes", "routes_test.go"), []byte("package routes"), 0o600)
 
 	container := `package app
 
@@ -64,6 +66,20 @@ func BuildContainer(version string) *AppContainer {
 `
 	os.WriteFile(filepath.Join("internal/app", "container.go"), []byte(container), 0o600)
 
+	main := `package main
+
+import (
+    "github.com/go-chi/chi/v5"
+    "github.com/rgomids/go-api-template-clean/internal/app"
+    httproutes "github.com/rgomids/go-api-template-clean/internal/handler/http/routes"
+)
+
+func registerRoutes(r *chi.Mux, c *app.AppContainer) {
+    httproutes.RegisterRoutes(r, c.UserHandler)
+}
+`
+	os.WriteFile(filepath.Join("cmd", "main.go"), []byte(main), 0o600)
+
 	spec := &ScaffoldSpec{EntityName: "Invoice"}
 	if err := Update(spec); err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -77,6 +93,9 @@ func BuildContainer(version string) *AppContainer {
 	if strings.Count(content, "/invoices") != 1 {
 		t.Fatalf("route duplicated")
 	}
+	if !strings.Contains(content, "invoiceHandler *httphandler.InvoiceHandler") {
+		t.Fatalf("route signature not updated")
+	}
 
 	b, _ = os.ReadFile(filepath.Join("internal/app", "container.go"))
 	c := string(b)
@@ -85,6 +104,11 @@ func BuildContainer(version string) *AppContainer {
 	}
 	if strings.Count(c, "InvoiceHandler") != 4 {
 		t.Fatalf("container content unexpected")
+	}
+
+	b, _ = os.ReadFile(filepath.Join("cmd", "main.go"))
+	if !strings.Contains(string(b), "c.InvoiceHandler") {
+		t.Fatalf("main not updated")
 	}
 
 	if err := Update(spec); err != nil {

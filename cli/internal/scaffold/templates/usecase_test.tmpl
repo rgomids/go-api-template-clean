@@ -9,11 +9,30 @@ import (
 )
 
 type fakeRepo struct {
-    saveFn func(*entity.{{ .EntityName }}) error
+    saveFn   func(*entity.{{ .EntityName }}) error
+    findFn   func(string) (*entity.{{ .EntityName }}, error)
+    deleteFn func(string) error
 }
 
 func (f *fakeRepo) Save(e *entity.{{ .EntityName }}) error {
-    return f.saveFn(e)
+    if f.saveFn != nil {
+        return f.saveFn(e)
+    }
+    return nil
+}
+
+func (f *fakeRepo) FindByID(id string) (*entity.{{ .EntityName }}, error) {
+    if f.findFn != nil {
+        return f.findFn(id)
+    }
+    return nil, nil
+}
+
+func (f *fakeRepo) Delete(id string) error {
+    if f.deleteFn != nil {
+        return f.deleteFn(id)
+    }
+    return nil
 }
 
 func Test{{ .EntityName }}UseCase_Create(t *testing.T) {
