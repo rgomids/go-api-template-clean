@@ -46,12 +46,14 @@ func Generate(spec *ScaffoldSpec) error {
 	data := buildTemplateData(spec)
 
 	files := map[string]string{
-		"entity.tmpl":     filepath.Join("internal/domain/entity", formatter.ToSnake(spec.EntityName)+".go"),
-		"repository.tmpl": filepath.Join("internal/domain/repository", formatter.ToSnake(spec.EntityName)+"_repository.go"),
-		"service.tmpl":    filepath.Join("internal/domain/service", formatter.ToSnake(spec.EntityName)+"_service.go"),
-		"usecase.tmpl":    filepath.Join("internal/domain/usecase", formatter.ToSnake(spec.EntityName)+"_usecase.go"),
-		"handler.tmpl":    filepath.Join("internal/handler/http", formatter.ToSnake(spec.EntityName)+"_handler.go"),
-		"test.tmpl":       filepath.Join("internal/handler/http", formatter.ToSnake(spec.EntityName)+"_handler_test.go"),
+		"entity.tmpl":          filepath.Join("internal/domain/entity", formatter.ToSnake(spec.EntityName)+".go"),
+		"repository.tmpl":      filepath.Join("internal/domain/repository", formatter.ToSnake(spec.EntityName)+"_repository.go"),
+		"service.tmpl":         filepath.Join("internal/domain/service", formatter.ToSnake(spec.EntityName)+"_service.go"),
+		"usecase.tmpl":         filepath.Join("internal/domain/usecase", formatter.ToSnake(spec.EntityName)+"_usecase.go"),
+		"handler.tmpl":         filepath.Join("internal/handler/http", formatter.ToSnake(spec.EntityName)+"_handler.go"),
+		"handler_test.tmpl":    filepath.Join("internal/handler/http", formatter.ToSnake(spec.EntityName)+"_handler_test.go"),
+		"usecase_test.tmpl":    filepath.Join("internal/domain/usecase", formatter.ToSnake(spec.EntityName)+"_usecase_test.go"),
+		"mock_repository.tmpl": filepath.Join("mocks", formatter.ToSnake(spec.EntityName)+"_repository_mock.go"),
 	}
 
 	for tmpl, dest := range files {

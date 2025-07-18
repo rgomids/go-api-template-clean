@@ -1,0 +1,129 @@
+package http
+
+import (
+    "bytes"
+    "context"
+    "errors"
+    "net/http"
+    "net/http/httptest"
+    "testing"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/rgomids/go-api-template-clean/internal/domain/entity"
+)
+
+type fake{{.Entity}}UseCase struct {
+    createFn func(*entity.{{.Entity}}) (*entity.{{.Entity}}, error)
+    getFn    func(string) (*entity.{{.Entity}}, error)
+    listFn   func() ([]*entity.{{.Entity}}, error)
+    updateFn func(string, *entity.{{.Entity}}) (*entity.{{.Entity}}, error)
+    deleteFn func(string) error
+}
+
+func (f *fake{{.Entity}}UseCase) Create(e *entity.{{.Entity}}) (*entity.{{.Entity}}, error) {
+    if f.createFn != nil { return f.createFn(e) }
+    return e, nil
+}
+func (f *fake{{.Entity}}UseCase) GetByID(id string) (*entity.{{.Entity}}, error) {
+    if f.getFn != nil { return f.getFn(id) }
+    return &entity.{{.Entity}}{}, nil
+}
+func (f *fake{{.Entity}}UseCase) List() ([]*entity.{{.Entity}}, error) {
+    if f.listFn != nil { return f.listFn() }
+    return []*entity.{{.Entity}}{}, nil
+}
+func (f *fake{{.Entity}}UseCase) Update(id string, e *entity.{{.Entity}}) (*entity.{{.Entity}}, error) {
+    if f.updateFn != nil { return f.updateFn(id, e) }
+    return e, nil
+}
+func (f *fake{{.Entity}}UseCase) Delete(id string) error {
+    if f.deleteFn != nil { return f.deleteFn(id) }
+    return nil
+}
+
+func Test{{.Entity}}HandlerCreate(t *testing.T) {
+    cases := []struct {
+        name     string
+        body     string
+        usecase  *fake{{.Entity}}UseCase
+        wantCode int
+    }{
+        {"success", `{}`, &fake{{.Entity}}UseCase{}, http.StatusCreated},
+        {"bad payload", `{"`, &fake{{.Entity}}UseCase{}, http.StatusBadRequest},
+        {"usecase error", `{}`, &fake{{.Entity}}UseCase{createFn: func(*entity.{{.Entity}}) (*entity.{{.Entity}}, error) { return nil, errors.New("fail") }}, http.StatusInternalServerError},
+    }
+    for _, tc := range cases {
+        t.Run(tc.name, func(t *testing.T) {
+            h := New{{.Entity}}Handler(tc.usecase)
+            req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(tc.body))
+            rr := httptest.NewRecorder()
+            h.Create(rr, req)
+            if rr.Code != tc.wantCode {
+                t.Fatalf("expected %d, got %d", tc.wantCode, rr.Code)
+            }
+        })
+    }
+}
+
+func Test{{.Entity}}HandlerGetByID(t *testing.T) {
+    h := New{{.Entity}}Handler(&fake{{.Entity}}UseCase{})
+    req := httptest.NewRequest(http.MethodGet, "/1", nil)
+    ctx := chi.NewRouteContext()
+    ctx.URLParams.Add("id", "1")
+    req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+    rr := httptest.NewRecorder()
+    h.GetByID(rr, req)
+    if rr.Code != http.StatusOK {
+        t.Fatalf("expected 200, got %d", rr.Code)
+    }
+}
+
+func Test{{.Entity}}HandlerList(t *testing.T) {
+    h := New{{.Entity}}Handler(&fake{{.Entity}}UseCase{})
+    req := httptest.NewRequest(http.MethodGet, "/", nil)
+    rr := httptest.NewRecorder()
+    h.List(rr, req)
+    if rr.Code != http.StatusOK {
+        t.Fatalf("expected 200, got %d", rr.Code)
+    }
+}
+
+func Test{{.Entity}}HandlerUpdate(t *testing.T) {
+    cases := []struct {
+        name     string
+        body     string
+        usecase  *fake{{.Entity}}UseCase
+        wantCode int
+    }{
+        {"success", `{}`, &fake{{.Entity}}UseCase{}, http.StatusOK},
+        {"bad payload", `{"`, &fake{{.Entity}}UseCase{}, http.StatusBadRequest},
+        {"usecase error", `{}`, &fake{{.Entity}}UseCase{updateFn: func(string, *entity.{{.Entity}}) (*entity.{{.Entity}}, error) { return nil, errors.New("fail") }}, http.StatusInternalServerError},
+    }
+    for _, tc := range cases {
+        t.Run(tc.name, func(t *testing.T) {
+            h := New{{.Entity}}Handler(tc.usecase)
+            req := httptest.NewRequest(http.MethodPut, "/1", bytes.NewBufferString(tc.body))
+            ctx := chi.NewRouteContext()
+            ctx.URLParams.Add("id", "1")
+            req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+            rr := httptest.NewRecorder()
+            h.Update(rr, req)
+            if rr.Code != tc.wantCode {
+                t.Fatalf("expected %d, got %d", tc.wantCode, rr.Code)
+            }
+        })
+    }
+}
+
+func Test{{.Entity}}HandlerDelete(t *testing.T) {
+    h := New{{.Entity}}Handler(&fake{{.Entity}}UseCase{})
+    req := httptest.NewRequest(http.MethodDelete, "/1", nil)
+    ctx := chi.NewRouteContext()
+    ctx.URLParams.Add("id", "1")
+    req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+    rr := httptest.NewRecorder()
+    h.Delete(rr, req)
+    if rr.Code != http.StatusNoContent {
+        t.Fatalf("expected 204, got %d", rr.Code)
+    }
+}
