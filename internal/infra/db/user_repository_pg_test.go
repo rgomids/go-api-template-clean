@@ -29,9 +29,8 @@ func (s stubRow) Scan(dest ...any) error {
 }
 
 type stubDB struct {
-	row      rowScanner
-	execErr  error
-	queryErr error
+	row     rowScanner
+	execErr error
 }
 
 func (s *stubDB) Exec(query string, args ...any) (sql.Result, error) {

@@ -3,9 +3,5 @@ package service
 import "{{ .ImportPath }}/internal/domain/entity"
 
 type {{ .EntityName }}Service interface {
-Create(e *entity.{{ .EntityName }}) (*entity.{{ .EntityName }}, error)
-GetByID(id string) (*entity.{{ .EntityName }}, error)
-List() ([]*entity.{{ .EntityName }}, error)
-Update(id string, e *entity.{{ .EntityName }}) (*entity.{{ .EntityName }}, error)
-Delete(id string) error
+    Create(e *entity.{{ .EntityName }}) error
 }

@@ -1,16 +1,16 @@
 package http
 
 import (
-"net/http"
-"{{ .ImportPath }}/internal/domain/usecase"
+    "net/http"
+    "{{ .ImportPath }}/internal/domain/service"
 )
 
 type {{ .EntityName }}Handler struct {
-usecase *usecase.{{ .EntityName }}UseCase
+    service service.{{ .EntityName }}Service
 }
 
-func New{{ .EntityName }}Handler(uc *usecase.{{ .EntityName }}UseCase) *{{ .EntityName }}Handler {
-return &{{ .EntityName }}Handler{usecase: uc}
+func New{{ .EntityName }}Handler(s service.{{ .EntityName }}Service) *{{ .EntityName }}Handler {
+    return &{{ .EntityName }}Handler{service: s}
 }
 
 func (h *{{ .EntityName }}Handler) Create(w http.ResponseWriter, r *http.Request) {}
