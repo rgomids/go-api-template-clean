@@ -1,6 +1,8 @@
-.PHONY: help run dev lint fmt test coverage build docker-dev docker-prod setup
+.PHONY: help run dev lint fmt test coverage build docker-dev docker-prod setup build-cli scaffold
 
-help:
+CLI_BIN := ./bin/go-api-cli
+
+	help:
 	@echo "Comandos disponíveis:"
 	@echo "  make run          - Executa a API localmente (modo padrão)"
 	@echo "  make dev          - Executa a API com variável ENV=dev"
@@ -12,6 +14,8 @@ help:
 	@echo "  make build        - Compila o binário para o host local"
 	@echo "  make docker-dev   - Builda a imagem Docker de dev"
 	@echo "  make docker-prod  - Builda a imagem Docker de produção"
+	@echo "  make build-cli    - Compila a CLI de scaffolding"
+	@echo "  make scaffold     - Gera código de entidade via CLI"
 
 run:
 	go run ./cmd/main.go
@@ -19,7 +23,7 @@ run:
 dev:
 	ENV=dev go run ./cmd/main.go
 
-setup:
+setup: build build-cli
 	@cp -n .env.example .env 2>/dev/null || true
 	go mod download
 	go install honnef.co/go/tools/cmd/staticcheck@latest
@@ -41,6 +45,12 @@ fmt:
 
 build:
 	go build -o bin/api ./cmd/main.go
+
+build-cli:
+	go build -o $(CLI_BIN) ../go-api-cli/cmd/main.go
+
+scaffold:
+	$(CLI_BIN) scaffold $(entity) $(fields)
 
 docker-dev:
 	docker build -f infra/docker/Dockerfile.dev -t go-api-template:dev .

@@ -1,93 +1,104 @@
 # go-api-template-clean
 
-Este repositório apresenta uma estrutura base para APIs em Go.
-Consulte o diretório [`docs`](docs/README.md) para detalhes de arquitetura e instruções de uso.
+Este repositório oferece uma base para construir APIs em Go seguindo Clean Architecture e princípios SOLID.
 
 ## Requisitos
 
 - Go 1.20 ou superior
 - Make
-- Ferramentas de lint como [staticcheck](https://staticcheck.io) (instalado via `make setup`)
+- Ferramentas de lint como [staticcheck](https://staticcheck.io) (instaladas via `make setup`)
+
+## Visão Geral da Arquitetura
+
+A estrutura divide responsabilidades em camadas bem definidas:
+
+- **domain**: entidades e regras de negócio
+- **infra**: detalhes de infraestrutura (banco, cache, email)
+- **handler**: entrada HTTP
+- **app**: composição e injeção de dependências
+
+Essas separações reforçam baixo acoplamento e alta coesão.
+
+### Padrões Utilizados
+- Factory
+- Adapter
+- Strategy
+- Middleware
+- Interface Segregation
+- Dependency Inversion
+
+### Estrutura de Diretórios
+```text
+.
+├── cmd/                  ponto de entrada da aplicação
+├── docs/                 documentação e guias
+├── internal/
+│   ├── app/              injeção de dependências
+│   ├── config/           carregamento de variáveis de ambiente
+│   ├── domain/           regras de negócio
+│   │   ├── entity/       modelos de domínio
+│   │   ├── repository/   contratos de persistência
+│   │   ├── service/      interfaces de serviços
+│   │   └── usecase/      orquestração de regras
+│   ├── handler/          camadas de entrada (HTTP)
+│   │   └── http/         handlers, rotas e middlewares
+│   └── infra/            implementações concretas (db, cache, email)
+└── pkg/                  utilidades e contratos externos
+```
 
 ## Conexões externas
 
-O projeto já inclui integrações para:
-
-- Banco de dados PostgreSQL
-- Cache Redis
-- Envio de emails via SMTP
+O projeto já contempla integrações para PostgreSQL, Redis e SMTP.
 
 ## Configuração rápida
 
-1. Execute o comando abaixo para preparar o ambiente de desenvolvimento:
+1. Execute:
    ```bash
    make setup
    ```
-   Esse passo copia o `.env.example` para `.env` (caso ainda não exista), instala as dependências Go e a ferramenta `staticcheck`.
-2. Ajuste as variáveis no arquivo `.env`:
-   - `APP_ENV` (dev|prod)
-   - `PORT` (padrão 8080)
-   - `DATABASE_URL` (obrigatória)
-   - `REDIS_URL`
-   - `SMTP_HOST`
-   - `SMTP_PORT` (padrão 587)
-   - `SMTP_USER`
-   - `SMTP_PASSWORD`
-3. Execute a aplicação:
+   Esse passo copia `.env.example` para `.env` (caso não exista), instala dependências Go e `staticcheck`.
+2. Ajuste as variáveis no `.env` conforme `internal/config`.
+3. Rode a aplicação:
    ```bash
    make run
    ```
 
 ## Testes e cobertura
 
-Para executar os testes com relatório de cobertura, utilize:
-
 ```bash
 make coverage
 ```
-O comando gera os arquivos `coverage/coverage.out` e `coverage/coverage.html`.
+Gera `coverage/coverage.out` e `coverage/coverage.html`.
+
+## 🔧 Scaffold de novas entidades
+
+Este projeto inclui a CLI `go-api-cli` para gerar scaffolds completos.
+
+Exemplo:
+```bash
+make scaffold entity=Book fields="title:string author:string genre:enum[fiction,non-fiction] pages:int"
+```
+O comando cria arquivos em todas as camadas, testes automatizados e migrations. Para compilar a CLI:
+```bash
+make build-cli
+```
 
 ## Rotas disponíveis
 
-- `GET /health` retorna o status e a versão da API.
-- `POST /users` cria um usuário.
-- `DELETE /users/{id}` remove um usuário.
+- `GET /health` retorna o status da API
+- `POST /users` cria um usuário
+- `DELETE /users/{id}` remove um usuário
 
-Importe a coleção `docs/postman_collection.json` e o ambiente `docs/postman_environment.json` no Postman para testar os endpoints rapidamente.
+Importe `docs/postman_collection.json` e `docs/postman_environment.json` no Postman para testar.
 
-## Evoluindo a API
+## Como estender
 
-Siga os passos abaixo para adicionar novas funcionalidades. O exemplo a seguir mostra como criar uma rota para cadastro de produtos.
+- Crie entidades em `internal/domain/entity` e interfaces em `repository` ou `service`.
+- Implemente casos de uso em `usecase`.
+- Adicione handlers e rotas em `internal/handler/http` e registre-as em `routes`.
+- Para cada dependência externa, forneça uma implementação em `internal/infra` e injete via `app`.
+- Consulte [AGENTS.md](AGENTS.md) para garantir aderência aos princípios SOLID.
 
-1. Crie a estrutura do produto em `internal/domain/entity/product.go`:
-   ```go
-   package entity
-
-   type Product struct {
-       ID   string
-       Name string
-   }
-   ```
-2. Defina `ProductRepository` em `internal/domain/repository` e a interface `ProductService` em `internal/domain/service`.
-3. Implemente `ProductUseCase` em `internal/domain/usecase` seguindo as interfaces criadas.
-4. Crie `ProductHandler` em `internal/handler/http` para expor os métodos via HTTP.
-5. Registre as rotas em `internal/handler/http/routes/routes.go`:
-   ```go
-   func RegisterRoutes(router *chi.Mux, userHandler *http.UserHandler, productHandler *http.ProductHandler) {
-       router.Route("/users", func(r chi.Router) {
-           r.Post("/", userHandler.Register)
-           r.Delete("/{id}", userHandler.Delete)
-       })
-
-       router.Route("/products", func(r chi.Router) {
-           r.Post("/", productHandler.Create)
-           r.Get("/{id}", productHandler.FindByID)
-       })
-   }
-   ```
-6. Atualize `BuildContainer` em `internal/app/container.go` para injetar o novo handler.
-7. Execute `go test ./...` para garantir que tudo continua funcionando.
-
-### Referências sobre Patterns
+### Referências
 - [Wikipedia - Software design pattern](https://en.wikipedia.org/wiki/Software_design_pattern)
 - [Refactoring Guru - Design Patterns in Go](https://refactoring.guru/design-patterns/go)
