@@ -1,0 +1,18 @@
+package usecase
+
+import (
+"{{ .ImportPath }}/internal/domain/entity"
+"{{ .ImportPath }}/internal/domain/repository"
+)
+
+type {{ .EntityName }}UseCase struct {
+repo repository.{{ .EntityName }}Repository
+}
+
+func New{{ .EntityName }}UseCase(r repository.{{ .EntityName }}Repository) *{{ .EntityName }}UseCase {
+return &{{ .EntityName }}UseCase{repo: r}
+}
+
+func (uc *{{ .EntityName }}UseCase) Create(e *entity.{{ .EntityName }}) error {
+return uc.repo.Save(e)
+}

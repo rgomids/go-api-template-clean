@@ -1,30 +1,14 @@
 package mocks
 
-import "github.com/rgomids/go-api-template-clean/internal/domain/entity"
+import "{{ .ImportPath }}/internal/domain/entity"
 
-type Mock{{.Entity}}Repository struct {
-    SaveFn     func(*entity.{{.Entity}}) error
-    FindByIDFn func(string) (*entity.{{.Entity}}, error)
-    DeleteFn   func(string) error
+type Mock{{ .EntityName }}Repo struct {
+    SaveFn func(*entity.{{ .EntityName }}) error
 }
 
-func (m *Mock{{.Entity}}Repository) Save(e *entity.{{.Entity}}) error {
+func (m *Mock{{ .EntityName }}Repo) Save(e *entity.{{ .EntityName }}) error {
     if m.SaveFn != nil {
         return m.SaveFn(e)
-    }
-    return nil
-}
-
-func (m *Mock{{.Entity}}Repository) FindByID(id string) (*entity.{{.Entity}}, error) {
-    if m.FindByIDFn != nil {
-        return m.FindByIDFn(id)
-    }
-    return &entity.{{.Entity}}{}, nil
-}
-
-func (m *Mock{{.Entity}}Repository) Delete(id string) error {
-    if m.DeleteFn != nil {
-        return m.DeleteFn(id)
     }
     return nil
 }

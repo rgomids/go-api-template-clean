@@ -48,4 +48,10 @@ func TestHelpers(t *testing.T) {
 	if sqlType(FieldSpec{Type: "json"}) != "jsonb" {
 		t.Errorf("sqlType json failed")
 	}
+
+	spec := &ScaffoldSpec{EntityName: "log", Fields: []FieldSpec{{Name: "created", Type: "time"}}}
+	data := buildTemplateData(spec)
+	if !data.HasTime {
+		t.Errorf("expected HasTime for time fields")
+	}
 }

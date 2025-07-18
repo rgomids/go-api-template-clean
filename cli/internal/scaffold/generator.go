@@ -25,16 +25,20 @@ func init() {
 }
 
 type fieldTemplate struct {
-	Name    string
-	Column  string
-	GoType  string
-	SQLType string
+	Name       string
+	ColumnName string
+	JSONName   string
+	GoType     string
+	SQLType    string
 }
 
-type entityTemplate struct {
-	Entity      string
-	EntitySnake string
+type templateData struct {
+	ImportPath  string
+	EntityName  string
+	TableName   string
+	PluralKebab string
 	Fields      []fieldTemplate
+	HasTime     bool
 }
 
 // Generate creates the scaffold files for the given spec.
@@ -69,7 +73,7 @@ func Generate(spec *ScaffoldSpec) error {
 	return nil
 }
 
-func generateFile(tmplName, dest string, data entityTemplate) error {
+func generateFile(tmplName, dest string, data templateData) error {
 	path := filepath.Join(templateDir, tmplName)
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -86,7 +90,7 @@ func generateFile(tmplName, dest string, data entityTemplate) error {
 	return file.WriteFile(dest, buf.Bytes())
 }
 
-func generateMigrations(spec *ScaffoldSpec, data entityTemplate) error {
+func generateMigrations(spec *ScaffoldSpec, data templateData) error {
 	ts := time.Now().Unix()
 	name := fmt.Sprintf("%d_create_%s_table", ts, formatter.ToSnake(spec.EntityName)+"s")
 	up := filepath.Join("db/migrations", name+".up.sql")
@@ -100,17 +104,24 @@ func generateMigrations(spec *ScaffoldSpec, data entityTemplate) error {
 	return nil
 }
 
-func buildTemplateData(spec *ScaffoldSpec) entityTemplate {
-	d := entityTemplate{
-		Entity:      toPascal(spec.EntityName),
-		EntitySnake: formatter.ToSnake(spec.EntityName),
+func buildTemplateData(spec *ScaffoldSpec) templateData {
+	d := templateData{
+		ImportPath:  modulePath(),
+		EntityName:  toPascal(spec.EntityName),
+		TableName:   formatter.ToSnake(spec.EntityName) + "s",
+		PluralKebab: toKebab(spec.EntityName) + "s",
 	}
 	for _, f := range spec.Fields {
+		gt := goType(f)
+		if gt == "time.Time" {
+			d.HasTime = true
+		}
 		d.Fields = append(d.Fields, fieldTemplate{
-			Name:    toPascal(f.Name),
-			Column:  formatter.ToSnake(f.Name),
-			GoType:  goType(f),
-			SQLType: sqlType(f),
+			Name:       toPascal(f.Name),
+			ColumnName: formatter.ToSnake(f.Name),
+			JSONName:   formatter.ToSnake(f.Name),
+			GoType:     gt,
+			SQLType:    sqlType(f),
 		})
 	}
 	return d
@@ -175,4 +186,21 @@ func sqlType(f FieldSpec) string {
 	default:
 		return "text"
 	}
+}
+
+func toKebab(s string) string {
+	return strings.ReplaceAll(formatter.ToSnake(s), "_", "-")
+}
+
+func modulePath() string {
+	b, err := os.ReadFile("go.mod")
+	if err != nil {
+		return ""
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		if strings.HasPrefix(line, "module ") {
+			return strings.TrimSpace(strings.TrimPrefix(line, "module "))
+		}
+	}
+	return ""
 }

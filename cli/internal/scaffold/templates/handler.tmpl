@@ -1,0 +1,20 @@
+package http
+
+import (
+"net/http"
+"{{ .ImportPath }}/internal/domain/usecase"
+)
+
+type {{ .EntityName }}Handler struct {
+usecase *usecase.{{ .EntityName }}UseCase
+}
+
+func New{{ .EntityName }}Handler(uc *usecase.{{ .EntityName }}UseCase) *{{ .EntityName }}Handler {
+return &{{ .EntityName }}Handler{usecase: uc}
+}
+
+func (h *{{ .EntityName }}Handler) Create(w http.ResponseWriter, r *http.Request) {}
+func (h *{{ .EntityName }}Handler) GetByID(w http.ResponseWriter, r *http.Request) {}
+func (h *{{ .EntityName }}Handler) List(w http.ResponseWriter, r *http.Request) {}
+func (h *{{ .EntityName }}Handler) Update(w http.ResponseWriter, r *http.Request) {}
+func (h *{{ .EntityName }}Handler) Delete(w http.ResponseWriter, r *http.Request) {}
