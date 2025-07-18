@@ -1,0 +1,53 @@
+package usecase
+
+import (
+    "errors"
+    "testing"
+
+    "github.com/rgomids/go-api-template-clean/internal/domain/entity"
+)
+
+type Fake{{.Entity}}Repository struct {
+    SaveFn func(*entity.{{.Entity}}) error
+}
+
+func (f *Fake{{.Entity}}Repository) FindByID(id string) (*entity.{{.Entity}}, error) { return nil, nil }
+func (f *Fake{{.Entity}}Repository) Save(e *entity.{{.Entity}}) error {
+    if f.SaveFn != nil {
+        return f.SaveFn(e)
+    }
+    return nil
+}
+func (f *Fake{{.Entity}}Repository) Delete(id string) error { return nil }
+
+func Test{{.Entity}}UseCaseCreate(t *testing.T) {
+    cases := []struct {
+        name    string
+        repo    *Fake{{.Entity}}Repository
+        wantErr bool
+    }{
+        {name: "success", repo: &Fake{{.Entity}}Repository{}},
+        {
+            name:    "save error",
+            repo:    &Fake{{.Entity}}Repository{SaveFn: func(*entity.{{.Entity}}) error { return errors.New("fail") }},
+            wantErr: true,
+        },
+    }
+
+    for _, tc := range cases {
+        t.Run(tc.name, func(t *testing.T) {
+            uc := New{{.Entity}}UseCase(tc.repo)
+            _, err := uc.Create(Fake{{.Entity}}())
+            if tc.wantErr && err == nil {
+                t.Fatal("expected error")
+            }
+            if !tc.wantErr && err != nil {
+                t.Fatalf("unexpected error: %v", err)
+            }
+        })
+    }
+}
+
+func Fake{{.Entity}}() *entity.{{.Entity}} {
+    return &entity.{{.Entity}}{}
+}

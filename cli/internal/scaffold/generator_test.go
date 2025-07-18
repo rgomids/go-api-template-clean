@@ -23,8 +23,17 @@ func TestGenerateOK(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join("internal/domain/entity", "test.go")); err != nil {
-		t.Fatalf("expected file not created: %v", err)
+	paths := []string{
+		filepath.Join("internal/domain/entity", "test.go"),
+		filepath.Join("internal/domain/usecase", "test_usecase_test.go"),
+		filepath.Join("internal/handler/http", "test_handler_test.go"),
+		filepath.Join("mocks", "test_repository_mock.go"),
+	}
+
+	for _, p := range paths {
+		if _, err := os.Stat(p); err != nil {
+			t.Fatalf("expected file %s not created: %v", p, err)
+		}
 	}
 }
 
