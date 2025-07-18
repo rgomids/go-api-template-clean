@@ -47,7 +47,7 @@ build:
 	go build -o bin/api ./cmd/main.go
 
 build-cli:
-	go build -o $(CLI_BIN) ../go-api-cli/cmd/main.go
+	go build -o $(CLI_BIN) ./cli/cmd/main.go
 
 scaffold:
 	$(CLI_BIN) scaffold $(entity) $(fields)
