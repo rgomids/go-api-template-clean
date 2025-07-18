@@ -2,7 +2,7 @@
 
 CLI_BIN := ./bin/go-api-cli
 
-	help:
+help:
 	@echo "Comandos disponíveis:"
 	@echo "  make run          - Executa a API localmente (modo padrão)"
 	@echo "  make dev          - Executa a API com variável ENV=dev"
