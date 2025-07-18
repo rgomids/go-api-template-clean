@@ -1,0 +1,9 @@
+package repository
+
+import "{{ .ImportPath }}/internal/domain/entity"
+
+type {{ .EntityName }}Repository interface {
+    Save(e *entity.{{ .EntityName }}) error
+    FindByID(id string) (*entity.{{ .EntityName }}, error)
+    Delete(id string) error
+}

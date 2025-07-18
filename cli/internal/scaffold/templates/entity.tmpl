@@ -1,0 +1,11 @@
+package entity
+
+{{- if .HasTime }}
+import "time"
+{{- end }}
+
+type {{ .EntityName }} struct {
+{{- range .Fields }}
+{{ .Name }} {{ .GoType }} `json:"{{ .JSONName }}"`
+{{- end }}
+}

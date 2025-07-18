@@ -1,0 +1,7 @@
+CREATE TABLE {{ .TableName }} (
+id UUID PRIMARY KEY,
+{{- range .Fields }}
+{{ .ColumnName }} {{ .SQLType }},
+{{- end }}
+created_at TIMESTAMP NOT NULL DEFAULT now()
+);
