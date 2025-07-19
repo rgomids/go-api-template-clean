@@ -1,4 +1,4 @@
-CREATE TABLE {{ .TableName }} (
+CREATE TABLE {{ .PluralSnake }} (
 id UUID PRIMARY KEY,
 {{- range .Fields }}
 {{ .ColumnName }} {{ .SQLType }},

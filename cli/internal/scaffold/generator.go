@@ -35,12 +35,13 @@ type fieldTemplate struct {
 }
 
 type templateData struct {
-	ImportPath  string
-	EntityName  string
-	TableName   string
-	PluralKebab string
-	Fields      []fieldTemplate
-	HasTime     bool
+	ImportPath   string
+	EntityName   string
+	PluralPascal string
+	PluralSnake  string
+	PluralKebab  string
+	Fields       []fieldTemplate
+	HasTime      bool
 }
 
 // Generate creates the scaffold files for the given spec.
@@ -95,7 +96,8 @@ func generateFile(tmplName, dest string, data templateData) error {
 
 func generateMigrations(spec *ScaffoldSpec, data templateData) error {
 	ts := time.Now().Unix()
-	name := fmt.Sprintf("%d_create_%s_table", ts, formatter.ToSnake(spec.EntityName)+"s")
+	meta := formatter.BuildEntityMeta(spec.EntityName)
+	name := fmt.Sprintf("%d_create_%s_table", ts, meta.PluralSnake)
 	up := filepath.Join("db/migrations", name+".up.sql")
 	down := filepath.Join("db/migrations", name+".down.sql")
 	if err := generateFile("migration_up.tmpl", up, data); err != nil {
@@ -108,11 +110,14 @@ func generateMigrations(spec *ScaffoldSpec, data templateData) error {
 }
 
 func buildTemplateData(spec *ScaffoldSpec) templateData {
+	meta := formatter.BuildEntityMeta(spec.EntityName)
+
 	d := templateData{
-		ImportPath:  modulePath(),
-		EntityName:  toPascal(spec.EntityName),
-		TableName:   formatter.ToSnake(spec.EntityName) + "s",
-		PluralKebab: toKebab(spec.EntityName) + "s",
+		ImportPath:   modulePath(),
+		EntityName:   meta.EntityName,
+		PluralPascal: meta.PluralPascal,
+		PluralSnake:  meta.PluralSnake,
+		PluralKebab:  meta.PluralKebab,
 	}
 	for _, f := range spec.Fields {
 		gt := goType(f)

@@ -43,7 +43,8 @@ func updateRoutes(spec *ScaffoldSpec) error {
 	content := string(b)
 	marker := "// [AUTO-GENERATED-ROUTES]"
 
-	route := fmt.Sprintf("/%ss", formatter.ToSnake(spec.EntityName))
+	meta := formatter.BuildEntityMeta(spec.EntityName)
+	route := fmt.Sprintf("/%s", meta.PluralKebab)
 	if strings.Contains(content, route) {
 		return nil
 	}
