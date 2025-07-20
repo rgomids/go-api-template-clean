@@ -1,21 +1,94 @@
 package http
 
 import (
+    "bytes"
+    "context"
     "net/http"
     "net/http/httptest"
-    "strings"
     "testing"
+
+    "github.com/go-chi/chi/v5"
+    "{{ .ImportPath }}/internal/domain/entity"
 )
 
+type stubService struct {
+    createFn func(*entity.{{ .EntityName }}) error
+    getFn    func(string) (*entity.{{ .EntityName }}, error)
+    listFn   func(map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
+    updateFn func(string, *entity.{{ .EntityName }}) error
+    deleteFn func(string) error
+}
+
+func (s *stubService) Create(e *entity.{{ .EntityName }}) error {
+    if s.createFn != nil {
+        return s.createFn(e)
+    }
+    return nil
+}
+func (s *stubService) Update(id string, e *entity.{{ .EntityName }}) error {
+    if s.updateFn != nil { return s.updateFn(id, e) }; return nil }
+func (s *stubService) GetByID(id string) (*entity.{{ .EntityName }}, error) {
+    if s.getFn != nil { return s.getFn(id) }; return &entity.{{ .EntityName }}{}, nil }
+func (s *stubService) List(f map[string]interface{}) ([]*entity.{{ .EntityName }}, error) {
+    if s.listFn != nil { return s.listFn(f) }; return []*entity.{{ .EntityName }}{}, nil }
+func (s *stubService) Delete(id string) error {
+    if s.deleteFn != nil { return s.deleteFn(id) }; return nil }
+
 func Test{{ .EntityName }}Handler_Create(t *testing.T) {
-    handler := New{{ .EntityName }}Handler(nil) // use mocks in real test
-
-    req := httptest.NewRequest(http.MethodPost, "/{{ .PluralKebab }}", strings.NewReader(`{}`))
+    h := New{{ .EntityName }}Handler(&stubService{})
+    req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(`{}`))
     rr := httptest.NewRecorder()
+    h.Create(rr, req)
+    if rr.Code != http.StatusCreated {
+        t.Fatalf("expected 201, got %d", rr.Code)
+    }
+}
 
-    handler.Create(rr, req)
-
+func Test{{ .EntityName }}Handler_List(t *testing.T) {
+    h := New{{ .EntityName }}Handler(&stubService{})
+    req := httptest.NewRequest(http.MethodGet, "/?name=x", nil)
+    rr := httptest.NewRecorder()
+    h.List(rr, req)
     if rr.Code != http.StatusOK {
-        t.Errorf("expected 200, got %d", rr.Code)
+        t.Fatalf("expected 200, got %d", rr.Code)
+    }
+}
+
+func Test{{ .EntityName }}Handler_GetByID(t *testing.T) {
+    h := New{{ .EntityName }}Handler(&stubService{})
+    req := httptest.NewRequest(http.MethodGet, "/1", nil)
+    ctx := chi.NewRouteContext()
+    ctx.URLParams.Add("id", "1")
+    req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+    rr := httptest.NewRecorder()
+    h.GetByID(rr, req)
+    if rr.Code != http.StatusOK {
+        t.Fatalf("expected 200, got %d", rr.Code)
+    }
+}
+
+func Test{{ .EntityName }}Handler_Update(t *testing.T) {
+    h := New{{ .EntityName }}Handler(&stubService{})
+    req := httptest.NewRequest(http.MethodPut, "/1", bytes.NewBufferString(`{}`))
+    ctx := chi.NewRouteContext()
+    ctx.URLParams.Add("id", "1")
+    req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+    rr := httptest.NewRecorder()
+    h.Update(rr, req)
+    if rr.Code != http.StatusNoContent {
+        t.Fatalf("expected 204, got %d", rr.Code)
+    }
+}
+
+func Test{{ .EntityName }}Handler_Delete(t *testing.T) {
+    h := New{{ .EntityName }}Handler(&stubService{})
+    req := httptest.NewRequest(http.MethodDelete, "/1", nil)
+    ctx := chi.NewRouteContext()
+    ctx.URLParams.Add("id", "1")
+    req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+    rr := httptest.NewRecorder()
+    h.Delete(rr, req)
+    if rr.Code != http.StatusNoContent {
+        t.Fatalf("expected 204, got %d", rr.Code)
     }
 }

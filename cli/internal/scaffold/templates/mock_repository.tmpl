@@ -3,12 +3,34 @@ package mocks
 import "{{ .ImportPath }}/internal/domain/entity"
 
 type Mock{{ .EntityName }}Repo struct {
-    SaveFn func(*entity.{{ .EntityName }}) error
+    SaveFn   func(*entity.{{ .EntityName }}) error
+    UpdateFn func(string, *entity.{{ .EntityName }}) error
+    FindFn   func(string) (*entity.{{ .EntityName }}, error)
+    ListFn   func(map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
+    DeleteFn func(string) error
 }
 
 func (m *Mock{{ .EntityName }}Repo) Save(e *entity.{{ .EntityName }}) error {
-    if m.SaveFn != nil {
-        return m.SaveFn(e)
-    }
+    if m.SaveFn != nil { return m.SaveFn(e) }
+    return nil
+}
+
+func (m *Mock{{ .EntityName }}Repo) Update(id string, e *entity.{{ .EntityName }}) error {
+    if m.UpdateFn != nil { return m.UpdateFn(id, e) }
+    return nil
+}
+
+func (m *Mock{{ .EntityName }}Repo) FindByID(id string) (*entity.{{ .EntityName }}, error) {
+    if m.FindFn != nil { return m.FindFn(id) }
+    return &entity.{{ .EntityName }}{}, nil
+}
+
+func (m *Mock{{ .EntityName }}Repo) List(f map[string]interface{}) ([]*entity.{{ .EntityName }}, error) {
+    if m.ListFn != nil { return m.ListFn(f) }
+    return []*entity.{{ .EntityName }}{}, nil
+}
+
+func (m *Mock{{ .EntityName }}Repo) Delete(id string) error {
+    if m.DeleteFn != nil { return m.DeleteFn(id) }
     return nil
 }

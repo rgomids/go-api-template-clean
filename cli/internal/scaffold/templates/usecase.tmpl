@@ -1,18 +1,53 @@
 package usecase
 
 import (
-"{{ .ImportPath }}/internal/domain/entity"
-"{{ .ImportPath }}/internal/domain/repository"
+    "crypto/rand"
+    "encoding/hex"
+    "fmt"
+    "io"
+    "time"
+
+    "{{ .ImportPath }}/internal/domain/entity"
+    "{{ .ImportPath }}/internal/domain/repository"
+    "{{ .ImportPath }}/internal/domain/service"
 )
 
 type {{ .EntityName }}UseCase struct {
-repo repository.{{ .EntityName }}Repository
+    repo repository.{{ .EntityName }}Repository
 }
 
 func New{{ .EntityName }}UseCase(r repository.{{ .EntityName }}Repository) *{{ .EntityName }}UseCase {
-return &{{ .EntityName }}UseCase{repo: r}
+    return &{{ .EntityName }}UseCase{repo: r}
 }
 
 func (uc *{{ .EntityName }}UseCase) Create(e *entity.{{ .EntityName }}) error {
-return uc.repo.Save(e)
+    e.ID = generateID()
+    e.CreatedAt = time.Now()
+    return uc.repo.Save(e)
+}
+
+func (uc *{{ .EntityName }}UseCase) Update(id string, e *entity.{{ .EntityName }}) error {
+    return uc.repo.Update(id, e)
+}
+
+func (uc *{{ .EntityName }}UseCase) GetByID(id string) (*entity.{{ .EntityName }}, error) {
+    return uc.repo.FindByID(id)
+}
+
+func (uc *{{ .EntityName }}UseCase) List(filters map[string]interface{}) ([]*entity.{{ .EntityName }}, error) {
+    return uc.repo.List(filters)
+}
+
+func (uc *{{ .EntityName }}UseCase) Delete(id string) error {
+    return uc.repo.Delete(id)
+}
+
+var _ service.{{ .EntityName }}Service = (*{{ .EntityName }}UseCase)(nil)
+
+func generateID() string {
+    b := make([]byte, 16)
+    if _, err := io.ReadFull(rand.Reader, b); err != nil {
+        return fmt.Sprintf("%d", time.Now().UnixNano())
+    }
+    return hex.EncodeToString(b)
 }

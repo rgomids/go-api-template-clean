@@ -4,6 +4,8 @@ import "{{ .ImportPath }}/internal/domain/entity"
 
 type {{ .EntityName }}Repository interface {
     Save(e *entity.{{ .EntityName }}) error
+    Update(id string, e *entity.{{ .EntityName }}) error
     FindByID(id string) (*entity.{{ .EntityName }}, error)
+    List(filters map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
     Delete(id string) error
 }

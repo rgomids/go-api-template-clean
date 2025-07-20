@@ -32,6 +32,7 @@ type fieldTemplate struct {
 	JSONName   string
 	GoType     string
 	SQLType    string
+	Subtype    string
 }
 
 type templateData struct {
@@ -62,6 +63,7 @@ func Generate(spec *ScaffoldSpec) error {
 		"usecase_test.tmpl":    filepath.Join("internal/domain/usecase", formatter.ToSnake(spec.EntityName)+"_usecase_test.go"),
 		"mock_repository.tmpl": filepath.Join("mocks", formatter.ToSnake(spec.EntityName)+"_repository_mock.go"),
 		"factory.tmpl":         filepath.Join("internal/app", formatter.ToSnake(spec.EntityName)+"_factory.go"),
+		"repository_pg.tmpl":   filepath.Join("internal/infra/db", formatter.ToSnake(spec.EntityName)+"_repository_pg.go"),
 	}
 
 	for tmpl, dest := range files {
@@ -83,7 +85,10 @@ func generateFile(tmplName, dest string, data templateData) error {
 	if err != nil {
 		return err
 	}
-	t, err := template.New(tmplName).Parse(string(b))
+	funcMap := template.FuncMap{
+		"add": func(a, b int) int { return a + b },
+	}
+	t, err := template.New(tmplName).Funcs(funcMap).Parse(string(b))
 	if err != nil {
 		return err
 	}
@@ -118,18 +123,17 @@ func buildTemplateData(spec *ScaffoldSpec) templateData {
 		PluralPascal: meta.PluralPascal,
 		PluralSnake:  meta.PluralSnake,
 		PluralKebab:  meta.PluralKebab,
+		HasTime:      true,
 	}
 	for _, f := range spec.Fields {
 		gt := goType(f)
-		if gt == "time.Time" {
-			d.HasTime = true
-		}
 		d.Fields = append(d.Fields, fieldTemplate{
 			Name:       toPascal(f.Name),
 			ColumnName: formatter.ToSnake(f.Name),
 			JSONName:   formatter.ToSnake(f.Name),
 			GoType:     gt,
 			SQLType:    sqlType(f),
+			Subtype:    f.Subtype,
 		})
 	}
 	return d
@@ -184,6 +188,8 @@ func sqlType(f FieldSpec) string {
 		return "boolean"
 	case "time":
 		return "timestamp"
+	case "uuid":
+		return "uuid"
 	case "json":
 		return "jsonb"
 	case "array":
