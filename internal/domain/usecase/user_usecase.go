@@ -1,15 +1,13 @@
 package usecase
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
 	"github.com/rgomids/go-api-template-clean/internal/domain/repository"
 	"github.com/rgomids/go-api-template-clean/internal/domain/service"
+	"github.com/rgomids/go-api-template-clean/pkg/util"
 )
 
 // UserUseCase implements UserService, orchestrating business logic.
@@ -25,7 +23,7 @@ func NewUserUseCase(repo repository.UserRepository) *UserUseCase {
 // RegisterUser creates a new user after validating the email.
 func (uc *UserUseCase) RegisterUser(name, email string) (*entity.User, error) {
 	user := &entity.User{
-		ID:        generateID(),
+		ID:        util.GenerateID(),
 		Name:      name,
 		Email:     email,
 		CreatedAt: time.Now(),
@@ -48,11 +46,3 @@ func (uc *UserUseCase) RemoveUser(id string) error {
 
 // Ensure UserUseCase satisfies UserService at compile time.
 var _ service.UserService = (*UserUseCase)(nil)
-
-func generateID() string {
-	b := make([]byte, 16)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return fmt.Sprintf("%d", time.Now().UnixNano())
-	}
-	return hex.EncodeToString(b)
-}
