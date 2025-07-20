@@ -62,12 +62,17 @@ O projeto já contempla integrações para PostgreSQL, Redis e SMTP.
    ```bash
    make run
    ```
+4. Para utilizar Docker em desenvolvimento:
+   ```bash
+   make dev
+   ```
 
 ### 🔧 Subir ambiente de desenvolvimento
 
 ```bash
    make up
 ```
+O comando utiliza `infra/docker/dev/docker-compose.yml` para iniciar PostgreSQL, Redis e o serviço da aplicação.
 
 Banco de dados e Redis serão inicializados com:
 - PostgreSQL: localhost:5432
@@ -81,6 +86,13 @@ Para encerrar:
 
 ```bash
    make down
+```
+
+### 📦 Build das imagens Docker
+
+```bash
+make docker-dev   # imagem de desenvolvimento
+make docker-prod  # imagem de produção
 ```
 
 ## Testes e cobertura
