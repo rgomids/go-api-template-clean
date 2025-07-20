@@ -1,13 +1,8 @@
-version: "3.8"
-
-env_file:
-  - ../../.env
-
 services:
   app:
     build:
       context: ../..
-      dockerfile: infra/docker/Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: go_api_app
     volumes:
       - ../..:/app
@@ -15,9 +10,15 @@ services:
     command: reflex -c reflex.conf
     ports:
       - "${PORT}:8080"
+    env_file:
+      - ../../.env
     depends_on:
       - postgres
       - redis
+    tty: true
+    stdin_open: true
+    working_dir: /app
+
   postgres:
     image: postgres:15
     container_name: go_api_pg
@@ -29,6 +30,13 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    env_file:
+      - ../../.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7
@@ -37,6 +45,13 @@ services:
       - "${REDIS_PORT}:6379"
     volumes:
       - redisdata:/data
+    env_file:
+      - ../../.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
