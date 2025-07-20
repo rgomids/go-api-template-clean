@@ -4,6 +4,20 @@ env_file:
   - ../../.env
 
 services:
+  app:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.dev
+    container_name: go_api_app
+    volumes:
+      - ../..:/app
+      - go-mod-cache:/go/pkg/mod
+    command: reflex -c reflex.conf
+    ports:
+      - "${PORT}:8080"
+    depends_on:
+      - postgres
+      - redis
   postgres:
     image: postgres:15
     container_name: go_api_pg
@@ -27,3 +41,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  go-mod-cache:

@@ -5,7 +5,7 @@ CLI_BIN := ./bin/go-api-cli
 help:
 	@echo "Comandos disponíveis:"
 	@echo "  make run          - Executa a API localmente (modo padrão)"
-	@echo "  make dev          - Executa a API com variável ENV=dev"
+    @echo "  make dev          - Sobe a API em container com reflex"
 	@echo "  make setup        - Prepara o ambiente de desenvolvimento"
 	@echo "  make test         - Executa os testes unitários"
 	@echo "  make coverage     - Executa testes com relatório de cobertura"
@@ -25,7 +25,7 @@ run:
 	go run ./cmd/main.go
 
 dev:
-	ENV=dev go run ./cmd/main.go
+	docker compose -f docker/dev/docker-compose.yml run --service-ports app
 
 setup: build build-cli
 	@cp -n .env.example .env 2>/dev/null || true
