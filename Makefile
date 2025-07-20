@@ -5,7 +5,7 @@ CLI_BIN := ./bin/go-api-cli
 help:
 	@echo "Comandos disponíveis:"
 	@echo "  make run          - Executa a API localmente (modo padrão)"
-    @echo "  make dev          - Sobe a API em container com reflex"
+	@echo "  make dev          - Sobe a API em container com reflex"
 	@echo "  make setup        - Prepara o ambiente de desenvolvimento"
 	@echo "  make test         - Executa os testes unitários"
 	@echo "  make coverage     - Executa testes com relatório de cobertura"
