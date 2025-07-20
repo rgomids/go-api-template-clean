@@ -51,6 +51,7 @@ build-cli:
 
 scaffold:
 	$(CLI_BIN) scaffold $(entity) $(fields)
+	$(MAKE) fmt
 
 docker-dev:
 	docker build -f infra/docker/Dockerfile.dev -t go-api-template:dev .
