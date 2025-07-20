@@ -24,3 +24,35 @@ func TestStubServiceExecuteError(t *testing.T) {
 		t.Fatalf("expected %v, got %v", expectedErr, err)
 	}
 }
+
+func TestCRUDStubServiceDefaults(t *testing.T) {
+	s := CRUDStubService[int]{}
+	if err := s.Create(nil); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+	if _, err := s.GetByID("1"); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+	if _, err := s.List(map[string]interface{}{}); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+	if err := s.Update("1", nil); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+	if err := s.Delete("1"); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+}
+
+func TestCRUDStubServiceOverrides(t *testing.T) {
+	called := false
+	s := CRUDStubService[int]{
+		CreateFn: func(*int) error { called = true; return fmt.Errorf("fail") },
+	}
+	if err := s.Create(nil); err == nil {
+		t.Fatal("expected error")
+	}
+	if !called {
+		t.Fatal("override not called")
+	}
+}

@@ -9,33 +9,12 @@ import (
 
     "github.com/go-chi/chi/v5"
     "{{ .ImportPath }}/internal/domain/entity"
+    testutil "github.com/rgomids/go-api-template-clean/pkg/testing"
 )
 
-type stubService struct {
-    createFn func(*entity.{{ .EntityName }}) error
-    getFn    func(string) (*entity.{{ .EntityName }}, error)
-    listFn   func(map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
-    updateFn func(string, *entity.{{ .EntityName }}) error
-    deleteFn func(string) error
-}
-
-func (s *stubService) Create(e *entity.{{ .EntityName }}) error {
-    if s.createFn != nil {
-        return s.createFn(e)
-    }
-    return nil
-}
-func (s *stubService) Update(id string, e *entity.{{ .EntityName }}) error {
-    if s.updateFn != nil { return s.updateFn(id, e) }; return nil }
-func (s *stubService) GetByID(id string) (*entity.{{ .EntityName }}, error) {
-    if s.getFn != nil { return s.getFn(id) }; return &entity.{{ .EntityName }}{}, nil }
-func (s *stubService) List(f map[string]interface{}) ([]*entity.{{ .EntityName }}, error) {
-    if s.listFn != nil { return s.listFn(f) }; return []*entity.{{ .EntityName }}{}, nil }
-func (s *stubService) Delete(id string) error {
-    if s.deleteFn != nil { return s.deleteFn(id) }; return nil }
 
 func Test{{ .EntityName }}Handler_Create(t *testing.T) {
-    h := New{{ .EntityName }}Handler(&stubService{})
+    h := New{{ .EntityName }}Handler(&testutil.CRUDStubService[entity.{{ .EntityName }}]{})
     req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(`{}`))
     rr := httptest.NewRecorder()
     h.Create(rr, req)
@@ -45,7 +24,7 @@ func Test{{ .EntityName }}Handler_Create(t *testing.T) {
 }
 
 func Test{{ .EntityName }}Handler_List(t *testing.T) {
-    h := New{{ .EntityName }}Handler(&stubService{})
+    h := New{{ .EntityName }}Handler(&testutil.CRUDStubService[entity.{{ .EntityName }}]{})
     req := httptest.NewRequest(http.MethodGet, "/?name=x", nil)
     rr := httptest.NewRecorder()
     h.List(rr, req)
@@ -55,7 +34,7 @@ func Test{{ .EntityName }}Handler_List(t *testing.T) {
 }
 
 func Test{{ .EntityName }}Handler_GetByID(t *testing.T) {
-    h := New{{ .EntityName }}Handler(&stubService{})
+    h := New{{ .EntityName }}Handler(&testutil.CRUDStubService[entity.{{ .EntityName }}]{})
     req := httptest.NewRequest(http.MethodGet, "/1", nil)
     ctx := chi.NewRouteContext()
     ctx.URLParams.Add("id", "1")
@@ -68,7 +47,7 @@ func Test{{ .EntityName }}Handler_GetByID(t *testing.T) {
 }
 
 func Test{{ .EntityName }}Handler_Update(t *testing.T) {
-    h := New{{ .EntityName }}Handler(&stubService{})
+    h := New{{ .EntityName }}Handler(&testutil.CRUDStubService[entity.{{ .EntityName }}]{})
     req := httptest.NewRequest(http.MethodPut, "/1", bytes.NewBufferString(`{}`))
     ctx := chi.NewRouteContext()
     ctx.URLParams.Add("id", "1")
@@ -81,7 +60,7 @@ func Test{{ .EntityName }}Handler_Update(t *testing.T) {
 }
 
 func Test{{ .EntityName }}Handler_Delete(t *testing.T) {
-    h := New{{ .EntityName }}Handler(&stubService{})
+    h := New{{ .EntityName }}Handler(&testutil.CRUDStubService[entity.{{ .EntityName }}]{})
     req := httptest.NewRequest(http.MethodDelete, "/1", nil)
     ctx := chi.NewRouteContext()
     ctx.URLParams.Add("id", "1")
