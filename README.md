@@ -63,6 +63,26 @@ O projeto já contempla integrações para PostgreSQL, Redis e SMTP.
    make run
    ```
 
+### 🔧 Subir ambiente de desenvolvimento
+
+```bash
+   make up
+```
+
+Banco de dados e Redis serão inicializados com:
+- PostgreSQL: localhost:5432
+- Redis: localhost:6379
+
+Os valores podem ser ajustados copiando `.env.example` para `.env` e editando as
+variáveis `DB_*` e `REDIS_*`. O `docker-compose` lerá essas variáveis para
+configurar os serviços.
+
+Para encerrar:
+
+```bash
+   make down
+```
+
 ## Testes e cobertura
 
 ```bash
