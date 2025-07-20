@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
+	dbx "github.com/rgomids/go-api-template-clean/pkg/db"
 )
 
 type stubRow struct {
@@ -29,15 +30,17 @@ func (s stubRow) Scan(dest ...any) error {
 }
 
 type stubDB struct {
-	row     rowScanner
+	row     dbx.RowScanner
 	execErr error
 }
+
+func (s *stubDB) Query(query string, args ...any) (*sql.Rows, error) { return nil, nil }
 
 func (s *stubDB) Exec(query string, args ...any) (sql.Result, error) {
 	return nil, s.execErr
 }
 
-func (s *stubDB) QueryRow(query string, args ...any) rowScanner {
+func (s *stubDB) QueryRow(query string, args ...any) dbx.RowScanner {
 	return s.row
 }
 
