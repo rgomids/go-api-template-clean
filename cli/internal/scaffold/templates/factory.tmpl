@@ -10,8 +10,12 @@ import (
 
 type dummy{{ .EntityName }}Repository struct{}
 
-func (d *dummy{{ .EntityName }}Repository) FindByID(id string) (*entity.{{ .EntityName }}, error) { return nil, nil }
+func (d *dummy{{ .EntityName }}Repository) FindByID(id string) (*entity.{{ .EntityName }}, error) { return &entity.{{ .EntityName }}{}, nil }
+func (d *dummy{{ .EntityName }}Repository) List(filters map[string]interface{}) ([]*entity.{{ .EntityName }}, error) {
+    return []*entity.{{ .EntityName }}{}, nil
+}
 func (d *dummy{{ .EntityName }}Repository) Save(e *entity.{{ .EntityName }}) error { return nil }
+func (d *dummy{{ .EntityName }}Repository) Update(id string, e *entity.{{ .EntityName }}) error { return nil }
 func (d *dummy{{ .EntityName }}Repository) Delete(id string) error { return nil }
 
 func New{{ .EntityName }}Repository() domainrepo.{{ .EntityName }}Repository {

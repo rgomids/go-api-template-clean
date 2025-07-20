@@ -1,60 +1,43 @@
-package usecase_test
+package usecase
 
 import (
     "errors"
     "testing"
+    "time"
 
     "{{ .ImportPath }}/internal/domain/entity"
-    "{{ .ImportPath }}/internal/domain/usecase"
 )
 
 type fakeRepo struct {
     saveFn   func(*entity.{{ .EntityName }}) error
+    updateFn func(string, *entity.{{ .EntityName }}) error
     findFn   func(string) (*entity.{{ .EntityName }}, error)
+    listFn   func(map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
     deleteFn func(string) error
 }
 
-func (f *fakeRepo) Save(e *entity.{{ .EntityName }}) error {
-    if f.saveFn != nil {
-        return f.saveFn(e)
-    }
-    return nil
-}
-
-func (f *fakeRepo) FindByID(id string) (*entity.{{ .EntityName }}, error) {
-    if f.findFn != nil {
-        return f.findFn(id)
-    }
-    return nil, nil
-}
-
-func (f *fakeRepo) Delete(id string) error {
-    if f.deleteFn != nil {
-        return f.deleteFn(id)
-    }
-    return nil
-}
+func (f *fakeRepo) Save(e *entity.{{ .EntityName }}) error { if f.saveFn != nil { return f.saveFn(e) }; return nil }
+func (f *fakeRepo) Update(id string, e *entity.{{ .EntityName }}) error { if f.updateFn != nil { return f.updateFn(id, e) }; return nil }
+func (f *fakeRepo) FindByID(id string) (*entity.{{ .EntityName }}, error) { if f.findFn != nil { return f.findFn(id) }; return &entity.{{ .EntityName }}{}, nil }
+func (f *fakeRepo) List(fm map[string]interface{}) ([]*entity.{{ .EntityName }}, error) { if f.listFn != nil { return f.listFn(fm) }; return []*entity.{{ .EntityName }}{}, nil }
+func (f *fakeRepo) Delete(id string) error { if f.deleteFn != nil { return f.deleteFn(id) }; return nil }
 
 func Test{{ .EntityName }}UseCase_Create(t *testing.T) {
-    t.Run("success", func(t *testing.T) {
-        repo := &fakeRepo{saveFn: func(e *entity.{{ .EntityName }}) error { return nil }}
-        uc := usecase.New{{ .EntityName }}UseCase(repo)
+    repo := &fakeRepo{}
+    uc := New{{ .EntityName }}UseCase(repo)
+    e := &entity.{{ .EntityName }}{}
+    if err := uc.Create(e); err != nil {
+        t.Fatalf("unexpected error: %v", err)
+    }
+    if e.ID == "" || time.Since(e.CreatedAt) > time.Second {
+        t.Fatalf("fields not set")
+    }
+}
 
-        err := uc.Create(&entity.{{ .EntityName }}{})
-        if err != nil {
-            t.Errorf("expected nil, got %v", err)
-        }
-    })
-
-    t.Run("failure", func(t *testing.T) {
-        repo := &fakeRepo{saveFn: func(e *entity.{{ .EntityName }}) error {
-            return errors.New("fail")
-        }}
-        uc := usecase.New{{ .EntityName }}UseCase(repo)
-
-        err := uc.Create(&entity.{{ .EntityName }}{})
-        if err == nil {
-            t.Errorf("expected error, got nil")
-        }
-    })
+func Test{{ .EntityName }}UseCase_RepoError(t *testing.T) {
+    repo := &fakeRepo{saveFn: func(*entity.{{ .EntityName }}) error { return errors.New("fail") }}
+    uc := New{{ .EntityName }}UseCase(repo)
+    if err := uc.Create(&entity.{{ .EntityName }}{}); err == nil {
+        t.Fatal("expected error")
+    }
 }

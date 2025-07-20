@@ -29,6 +29,7 @@ func TestGenerateOK(t *testing.T) {
 		filepath.Join("internal/handler/http", "test_handler_test.go"),
 		filepath.Join("mocks", "test_repository_mock.go"),
 		filepath.Join("internal/app", "test_factory.go"),
+		filepath.Join("internal/infra/db", "test_repository_pg.go"),
 	}
 
 	for _, p := range paths {
@@ -49,10 +50,13 @@ func TestHelpers(t *testing.T) {
 	if sqlType(FieldSpec{Type: "json"}) != "jsonb" {
 		t.Errorf("sqlType json failed")
 	}
+	if sqlType(FieldSpec{Type: "uuid"}) != "uuid" {
+		t.Errorf("sqlType uuid failed")
+	}
 
-	spec := &ScaffoldSpec{EntityName: "log", Fields: []FieldSpec{{Name: "created", Type: "time"}}}
+	spec := &ScaffoldSpec{EntityName: "log"}
 	data := buildTemplateData(spec)
 	if !data.HasTime {
-		t.Errorf("expected HasTime for time fields")
+		t.Errorf("expected HasTime true")
 	}
 }

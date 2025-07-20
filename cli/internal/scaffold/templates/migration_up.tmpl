@@ -1,7 +1,7 @@
 CREATE TABLE {{ .PluralSnake }} (
 id UUID PRIMARY KEY,
 {{- range .Fields }}
-{{ .ColumnName }} {{ .SQLType }},
+{{ .ColumnName }} {{ .SQLType }},{{if eq .SQLType "text"}}{{if ne .GoType "string"}} -- allowed values: {{ .Subtype }}{{end}}{{end}}
 {{- end }}
 created_at TIMESTAMP NOT NULL DEFAULT now()
 );

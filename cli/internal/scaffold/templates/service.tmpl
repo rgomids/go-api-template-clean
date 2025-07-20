@@ -4,4 +4,8 @@ import "{{ .ImportPath }}/internal/domain/entity"
 
 type {{ .EntityName }}Service interface {
     Create(e *entity.{{ .EntityName }}) error
+    Update(id string, e *entity.{{ .EntityName }}) error
+    GetByID(id string) (*entity.{{ .EntityName }}, error)
+    List(filters map[string]interface{}) ([]*entity.{{ .EntityName }}, error)
+    Delete(id string) error
 }

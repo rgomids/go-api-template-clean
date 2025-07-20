@@ -1,11 +1,11 @@
 package entity
 
-{{- if .HasTime }}
 import "time"
-{{- end }}
 
 type {{ .EntityName }} struct {
+    ID string `json:"id"`
 {{- range .Fields }}
-{{ .Name }} {{ .GoType }} `json:"{{ .JSONName }}"`
+    {{ .Name }} {{ .GoType }} `json:"{{ .JSONName }}"`
 {{- end }}
+    CreatedAt time.Time `json:"created_at"`
 }
