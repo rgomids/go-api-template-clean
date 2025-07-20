@@ -1,15 +1,12 @@
 package usecase
 
 import (
-    "crypto/rand"
-    "encoding/hex"
-    "fmt"
-    "io"
     "time"
 
     "{{ .ImportPath }}/internal/domain/entity"
     "{{ .ImportPath }}/internal/domain/repository"
     "{{ .ImportPath }}/internal/domain/service"
+    "github.com/rgomids/go-api-template-clean/pkg/util"
 )
 
 type {{ .EntityName }}UseCase struct {
@@ -21,7 +18,7 @@ func New{{ .EntityName }}UseCase(r repository.{{ .EntityName }}Repository) *{{ .
 }
 
 func (uc *{{ .EntityName }}UseCase) Create(e *entity.{{ .EntityName }}) error {
-    e.ID = generateID()
+    e.ID = util.GenerateID()
     e.CreatedAt = time.Now()
     return uc.repo.Save(e)
 }
@@ -44,10 +41,3 @@ func (uc *{{ .EntityName }}UseCase) Delete(id string) error {
 
 var _ service.{{ .EntityName }}Service = (*{{ .EntityName }}UseCase)(nil)
 
-func generateID() string {
-    b := make([]byte, 16)
-    if _, err := io.ReadFull(rand.Reader, b); err != nil {
-        return fmt.Sprintf("%d", time.Now().UnixNano())
-    }
-    return hex.EncodeToString(b)
-}
