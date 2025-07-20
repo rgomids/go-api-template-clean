@@ -1,28 +1,18 @@
 package db
 
 import (
-	"database/sql"
-
 	"github.com/rgomids/go-api-template-clean/internal/domain/entity"
 	"github.com/rgomids/go-api-template-clean/internal/domain/repository"
+	dbx "github.com/rgomids/go-api-template-clean/pkg/db"
 )
 
 // PostgresUserRepository implements UserRepository using a PostgreSQL database.
-type dbExecutor interface {
-	Exec(query string, args ...any) (sql.Result, error)
-	QueryRow(query string, args ...any) rowScanner
-}
-
-type rowScanner interface {
-	Scan(dest ...any) error
-}
-
 type PostgresUserRepository struct {
-	db dbExecutor
+	db dbx.DBExecutor
 }
 
 // NewPostgresUserRepository creates a repository with the given DB connection.
-func NewPostgresUserRepository(db dbExecutor) *PostgresUserRepository {
+func NewPostgresUserRepository(db dbx.DBExecutor) *PostgresUserRepository {
 	return &PostgresUserRepository{db: db}
 }
 
