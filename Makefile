@@ -1,4 +1,4 @@
-.PHONY: help run dev lint fmt test coverage build docker-dev docker-prod setup build-cli scaffold
+.PHONY: help run dev lint fmt test coverage build docker-dev docker-prod setup build-cli scaffold up down logs ps
 
 CLI_BIN := ./bin/go-api-cli
 
@@ -16,6 +16,10 @@ help:
 	@echo "  make docker-prod  - Builda a imagem Docker de produção"
 	@echo "  make build-cli    - Compila a CLI de scaffolding"
 	@echo "  make scaffold     - Gera código de entidade via CLI"
+	@echo "  make up           - Sobe dependências via docker-compose"
+	@echo "  make down         - Encerra containers do docker-compose"
+	@echo "  make logs         - Visualiza logs dos serviços"
+	@echo "  make ps           - Lista status dos serviços"
 
 run:
 	go run ./cmd/main.go
@@ -58,3 +62,15 @@ docker-dev:
 
 docker-prod:
 	docker build -f infra/docker/Dockerfile.prod -t go-api-template:prod .
+
+up:
+	docker compose -f docker/dev/docker-compose.yml up -d
+
+down:
+	docker compose -f docker/dev/docker-compose.yml down
+
+logs:
+	docker compose -f docker/dev/docker-compose.yml logs -f
+
+ps:
+	docker compose -f docker/dev/docker-compose.yml ps
