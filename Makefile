@@ -25,7 +25,7 @@ run:
 	go run ./cmd/main.go
 
 dev:
-	docker compose -f docker/dev/docker-compose.yml run --service-ports app
+	docker compose -f infra/docker/dev/docker-compose.yml run --service-ports app
 
 setup: build build-cli
 	@cp -n .env.example .env 2>/dev/null || true
@@ -58,19 +58,19 @@ scaffold:
 	$(MAKE) fmt
 
 docker-dev:
-	docker build -f infra/docker/Dockerfile.dev -t go-api-template:dev .
+	docker build -f infra/docker/dev/Dockerfile -t go-api-template:dev .
 
 docker-prod:
-	docker build -f infra/docker/Dockerfile.prod -t go-api-template:prod .
+	docker build -f infra/docker/prod/Dockerfile -t go-api-template:prod .
 
 up:
-	docker compose -f docker/dev/docker-compose.yml up -d
+	docker compose -f infra/docker/dev/docker-compose.yml up -d
 
 down:
-	docker compose -f docker/dev/docker-compose.yml down
+	docker compose -f infra/docker/dev/docker-compose.yml down
 
 logs:
-	docker compose -f docker/dev/docker-compose.yml logs -f
+	docker compose -f infra/docker/dev/docker-compose.yml logs -f
 
 ps:
-	docker compose -f docker/dev/docker-compose.yml ps
+	docker compose -f infra/docker/dev/docker-compose.yml ps
